@@ -5,7 +5,7 @@ class Board {
      * cell-centered representation of the board
      * contains null if there is no figure on the cell
      */
-    private var board: List<List<Piece?>> = MutableList(8) { List(8) { null } }
+    val board: List<List<Piece?>> = MutableList(8) { List(8) { null } }
 
     var canWhiteCastleShort = true
         private set
@@ -18,7 +18,7 @@ class Board {
 
     var canEnPassant = false
         private set
-    var enPassantCellInfo: CellInfo? = null
+    var enPassantCellInfo: CellInfo = CellInfo('a', 0)
         private set
 
     var isWhiteTurn = true
