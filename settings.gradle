@@ -1,0 +1,3 @@
+include ':chessboard'
+include ':app'
+rootProject.name = "ChessBoard"
