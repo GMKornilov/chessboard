@@ -7,5 +7,23 @@ abstract class Piece(val isWhite: Boolean) {
 
     open var position = CellInfo('a', 1)
 
+    /**
+     * returns list of cells, where piece can legally move
+     */
+    abstract fun getLegalMoves(board: Board): List<CellInfo>
+
+    /**
+     * returns list of cells, where piece can move(including illegal moves)
+     */
     abstract fun getMoves(board: Board): List<CellInfo>
+
+    /**
+     * returns list of cells, where piece can hit (legally or illegally)
+     */
+    abstract fun getHitMoves(board: Board): List<CellInfo>
+
+    /**
+     * checks if piece can hit given cell
+     */
+    abstract fun canHit(cellInfo: CellInfo, board: Board): Boolean
 }

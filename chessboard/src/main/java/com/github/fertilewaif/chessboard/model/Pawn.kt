@@ -1,6 +1,13 @@
 package com.github.fertilewaif.chessboard.model
 
+import kotlin.math.abs
+
 class Pawn(isWhite: Boolean) : Piece(isWhite) {
+    override fun getLegalMoves(board: Board): List<CellInfo> {
+        // TODO: add pin
+        return getMoves(board)
+    }
+
     override fun getMoves(board: Board): List<CellInfo> {
         val forwardRow = if (isWhite) {
             position.row + 1
@@ -21,20 +28,47 @@ class Pawn(isWhite: Boolean) : Piece(isWhite) {
         }
 
         if (board.canEnPassant) {
-            if (board.enPassantCellInfo.col.dec() == position.col) {
+            if (board.enPassantCellInfo.col - 1 == position.col) {
                 res.add(CellInfo.fromIndexes(forwardRow, position.col - 'a' + 1, true))
             }
-            if (board.enPassantCellInfo.col.inc() == position.col) {
+            if (board.enPassantCellInfo.col + 1 == position.col) {
                 res.add(CellInfo.fromIndexes(forwardRow, position.col - 'a' - 1, true))
             }
         }
 
-        if (isWhite && position.row == 1) {
+        if (isWhite && position.row == 1 && board.board[position.row + 2][position.col - 'a'] == null) {
             res.add(CellInfo.fromIndexes(position.row + 2, position.col - 'a', true))
         }
-        if (!isWhite && position.row == 6) {
+        if (!isWhite && position.row == 6 && board.board[position.row - 2][position.col - 'a'] == null) {
             res.add(CellInfo.fromIndexes(position.row - 2, position.col - 'a', true))
         }
         return res
+    }
+
+    override fun getHitMoves(board: Board): List<CellInfo> {
+        val forwardRow = if (isWhite) {
+            position.row + 1
+        } else {
+            position.row - 1
+        }
+        val res = mutableListOf<CellInfo>()
+        if (position.col != 'h' && board.board[forwardRow][position.col - 'a' + 1]?.isWhite != isWhite) {
+            res.add(CellInfo.fromIndexes(forwardRow, position.col - 'a' + 1, true))
+        }
+        if (position.col != 'a' && board.board[forwardRow][position.col - 'a' - 1]?.isWhite != isWhite) {
+            res.add(CellInfo.fromIndexes(forwardRow, position.col - 'a' - 1, true))
+        }
+        return res
+    }
+
+    override fun canHit(cellInfo: CellInfo, board: Board): Boolean {
+        if (abs(position.col - cellInfo.col) != 1) {
+            return false
+        }
+        return if (isWhite) {
+            cellInfo.row - position.row == 1
+        } else {
+            position.row - cellInfo.row == 1
+        }
     }
 }

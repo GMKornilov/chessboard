@@ -14,7 +14,16 @@ class Knight(isWhite: Boolean) : Piece(isWhite) {
         )
     }
 
+    override fun getLegalMoves(board: Board): List<CellInfo> {
+        // TODO: add pin
+        return getMoves(board)
+    }
+
     override fun getMoves(board: Board): List<CellInfo> {
+        return getHitMoves(board)
+    }
+
+    override fun getHitMoves(board: Board): List<CellInfo> {
         val res = mutableListOf<CellInfo>()
         for ((deltaI, deltaJ) in deltas) {
             val row = position.row + deltaI
@@ -28,5 +37,11 @@ class Knight(isWhite: Boolean) : Piece(isWhite) {
             }
         }
         return res
+    }
+
+    override fun canHit(cellInfo: CellInfo, board: Board): Boolean {
+        val deltaRow = cellInfo.row - position.row
+        val deltaCol = cellInfo.col - position.col
+        return Pair(deltaRow, deltaCol) in deltas
     }
 }
