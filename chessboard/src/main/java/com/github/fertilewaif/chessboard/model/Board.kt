@@ -49,11 +49,11 @@ class Board {
      * checks if given cell is hit by opposite side figures
      */
     fun isHit(pos: CellInfo, isWhite: Boolean): Boolean {
-        val oppositePiecesList = (if (isWhite) {
+        val oppositePiecesList = if (isWhite) {
             blackPieces
         } else {
             whitePieces
-        })
+        }
         for (piece in oppositePiecesList) {
             if (piece.canHit(pos, this)) {
                 return true

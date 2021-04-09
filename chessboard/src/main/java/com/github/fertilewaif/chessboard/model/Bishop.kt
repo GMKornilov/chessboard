@@ -7,7 +7,35 @@ import kotlin.math.sign
 class Bishop(isWhite: Boolean) : Piece(isWhite) {
     override fun getLegalMoves(board: Board): List<CellInfo> {
         // TODO: add pinning
-        return getMoves(board)
+        val moves = getMoves(board)
+        val pinnerCell = board.isPinned(position, isWhite)
+        if (pinnerCell == null) {
+            return moves
+        }
+        val rowDiff = abs(pinnerCell.row - position.row)
+        val colDiff = abs(pinnerCell.col - position.col)
+
+        val signRow = sign((pinnerCell.row - position.row).toDouble()).toInt()
+        val signCol = sign((pinnerCell.col - position.col).toDouble()).toInt()
+
+        if (signRow == 0 || signCol == 0) {
+            return listOf()
+        }
+
+        val res = mutableListOf<CellInfo>()
+
+        for (move in moves) {
+            val moveRowDiff = abs(move.row - position.row)
+            val moveColDiff = abs(move.col - position.col)
+
+            val moveRowSign = sign((move.row - position.row).toDouble()).toInt()
+            val moveColSign = sign((move.col - position.col).toDouble()).toInt()
+
+            if (moveRowSign == signRow && moveColSign == signCol && moveRowDiff <= rowDiff && moveColDiff <= colDiff) {
+                res.add(move)
+            }
+        }
+        return res
     }
 
     override fun getMoves(board: Board): List<CellInfo> {

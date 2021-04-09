@@ -15,8 +15,11 @@ class Knight(isWhite: Boolean) : Piece(isWhite) {
     }
 
     override fun getLegalMoves(board: Board): List<CellInfo> {
-        // TODO: add pin
-        return getMoves(board)
+        return if (board.isPinned(position, isWhite) != null) {
+            listOf()
+        } else {
+            getMoves(board)
+        }
     }
 
     override fun getMoves(board: Board): List<CellInfo> {

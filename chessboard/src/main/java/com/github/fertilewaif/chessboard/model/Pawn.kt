@@ -5,7 +5,32 @@ import kotlin.math.abs
 class Pawn(isWhite: Boolean) : Piece(isWhite) {
     override fun getLegalMoves(board: Board): List<CellInfo> {
         // TODO: add pin
-        return getMoves(board)
+        val pinnerCell = board.isPinned(position, isWhite)
+        if (pinnerCell == null) {
+            return getMoves(board)
+        }
+        val forwardRow = if (isWhite) {
+            position.row + 1
+        } else {
+            position.row - 1
+        }
+        if (pinnerCell.col == pinnerCell.col) {
+            val res = mutableListOf<CellInfo>()
+            if (board.board[forwardRow][position.col - 'a'] == null) {
+                res.add(CellInfo(position.col, forwardRow))
+            }
+            if (isWhite && position.row == 1 && board.board[position.row + 2][position.col - 'a'] == null) {
+                res.add(CellInfo.fromIndexes(position.row + 2, position.col - 'a', true))
+            }
+            if (!isWhite && position.row == 6 && board.board[position.row - 2][position.col - 'a'] == null) {
+                res.add(CellInfo.fromIndexes(position.row - 2, position.col - 'a', true))
+            }
+            return res
+        }
+        if (pinnerCell.row != forwardRow || abs((pinnerCell.col - position.col)) != 1) {
+            return listOf()
+        }
+        return listOf(pinnerCell)
     }
 
     override fun getMoves(board: Board): List<CellInfo> {
