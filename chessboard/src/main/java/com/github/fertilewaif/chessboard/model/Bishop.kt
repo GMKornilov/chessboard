@@ -116,4 +116,12 @@ class Bishop(isWhite: Boolean) : Piece(isWhite) {
         }
         return true
     }
+
+    override fun toString(): String {
+        return if (isWhite) {
+            "B"
+        } else {
+            "b"
+        }
+    }
 }

@@ -50,4 +50,12 @@ class King(isWhite: Boolean) : Piece(isWhite) {
         val deltaCol = position.col - cellInfo.col
         return (deltaCol != 0 && deltaRow != 0) && max(abs(deltaCol), abs(deltaRow)) == 1
     }
+
+    override fun toString(): String {
+        return if(isWhite) {
+            "K"
+        } else {
+            "k"
+        }
+    }
 }

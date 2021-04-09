@@ -96,4 +96,12 @@ class Pawn(isWhite: Boolean) : Piece(isWhite) {
             position.row - cellInfo.row == 1
         }
     }
+
+    override fun toString(): String {
+        return if (isWhite) {
+            "P"
+        } else {
+            "p"
+        }
+    }
 }

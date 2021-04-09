@@ -33,4 +33,12 @@ class Queen(isWhite: Boolean) : Piece(isWhite) {
     override fun canHit(cellInfo: CellInfo, board: Board): Boolean {
         return bishop.canHit(cellInfo, board) || rook.canHit(cellInfo, board)
     }
+
+    override fun toString(): String {
+        return if(isWhite) {
+            "Q"
+        } else {
+            "q"
+        }
+    }
 }

@@ -47,4 +47,12 @@ class Knight(isWhite: Boolean) : Piece(isWhite) {
         val deltaCol = cellInfo.col - position.col
         return Pair(deltaRow, deltaCol) in deltas
     }
+
+    override fun toString(): String {
+        return if(isWhite) {
+            "K"
+        } else {
+            "k"
+        }
+    }
 }

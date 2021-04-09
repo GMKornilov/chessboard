@@ -108,4 +108,12 @@ class Rook(isWhite: Boolean) : Piece(isWhite) {
         }
         return true
     }
+
+    override fun toString(): String {
+        return if(isWhite) {
+            "R"
+        } else {
+            "r"
+        }
+    }
 }

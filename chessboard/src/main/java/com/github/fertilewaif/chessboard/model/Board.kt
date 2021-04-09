@@ -123,4 +123,67 @@ class Board {
     fun move(from: CellInfo, to: CellInfo): Boolean {
         TODO("implement me")
     }
+
+    fun toFen(): String {
+        val res = StringBuilder()
+        for (i in BOARD_SIZE - 1 downTo 0) {
+            var empty = 0
+            for (j in 0 until BOARD_SIZE) {
+                val piece = board[i][j]
+                if (piece == null) {
+                    empty++
+                } else {
+                    empty = 0
+                    if (empty != 0) {
+                        res.append(empty)
+                    }
+                    res.append(board[i][j].toString())
+                }
+            }
+            if (empty != 0) {
+                res.append(empty)
+            }
+            if (i != 0) {
+                res.append("/")
+            }
+        }
+        res.append(' ')
+        if (isWhiteTurn) {
+            res.append('w')
+        } else {
+            res.append('b')
+        }
+        res.append(' ')
+
+        if (!canWhiteCastleShort && !canWhiteCastleLong && !canBlackCastleShort && !canBlackCastleLong) {
+            res.append('-')
+        } else {
+            if (canBlackCastleShort) {
+                res.append('K')
+            }
+            if (canBlackCastleLong) {
+                res.append('Q')
+            }
+            if (canWhiteCastleShort) {
+                res.append('k')
+            }
+            if (canWhiteCastleLong) {
+                res.append('q')
+            }
+        }
+        res.append(' ')
+
+        if (!canEnPassant) {
+            res.append('-')
+        } else {
+            res.append(enPassantCellInfo.col + enPassantCellInfo.row.toString())
+        }
+        res.append(' ')
+
+        res.append(fiftyMovesRule)
+        res.append(' ')
+
+        res.append(turnNumber)
+        return res.toString()
+    }
 }
