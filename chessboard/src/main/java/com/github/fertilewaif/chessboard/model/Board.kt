@@ -12,7 +12,7 @@ class Board {
      * cell-centered representation of the board
      * contains null if there is no figure on the cell
      */
-    val board: List<List<Piece?>> = MutableList(BOARD_SIZE) { List(BOARD_SIZE) { null } }
+    val board: MutableList<MutableList<Piece?>> = MutableList(BOARD_SIZE) { MutableList(BOARD_SIZE) { null } }
 
     val whitePieces = mutableListOf<Piece>()
     val blackPieces = mutableListOf<Piece>()
@@ -28,7 +28,7 @@ class Board {
 
     var canEnPassant = false
         private set
-    var enPassantCellInfo: CellInfo = CellInfo('a', 0)
+    var enPassantCellInfo = CellInfo(0, 0)
         private set
 
     var isWhiteTurn = true
@@ -40,9 +40,9 @@ class Board {
     var turnNumber = 1
         private set
 
-    var whiteKingPosition = CellInfo('e', 1)
+    var whiteKingPosition = CellInfo(4, 0)
         private set
-    var blackKingPosition = CellInfo('e', 8)
+    var blackKingPosition = CellInfo(4, 7)
         private set
 
     /**
@@ -82,8 +82,8 @@ class Board {
         val deltaCol = sign(colDiff.toDouble()).toInt()
         //check if there are no pieces between king and given cell
         var row = kingPosition.row + deltaRow
-        var col = kingPosition.col - 'a' + deltaCol
-        while (row != position.row || col != position.col - 'a') {
+        var col = kingPosition.col + deltaCol
+        while (row != position.row || col != position.col) {
             if (board[row][col] != null) {
                 // there is a piece between king and given cell, thus it can't be pinned
                 return null
@@ -92,7 +92,7 @@ class Board {
             col += deltaCol
         }
         row = position.row + deltaRow
-        col = position.col - 'a' + deltaCol
+        col = position.col + deltaCol
         while (row >= 0 && col >= 0 && row < BOARD_SIZE && col < BOARD_SIZE) {
             val piece = board[row][col]
             if (piece == null) {
@@ -176,7 +176,7 @@ class Board {
         if (!canEnPassant) {
             res.append('-')
         } else {
-            res.append(enPassantCellInfo.col + enPassantCellInfo.row.toString())
+            res.append(('a' + enPassantCellInfo.col) + enPassantCellInfo.row.toString())
         }
         res.append(' ')
 

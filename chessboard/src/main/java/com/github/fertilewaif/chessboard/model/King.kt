@@ -34,7 +34,7 @@ class King(isWhite: Boolean) : Piece(isWhite) {
         for ((deltaRow, deltaCol) in deltas) {
             val newRow = position.row + deltaRow
             val newCol = position.col + deltaCol
-            if (newRow >= 0 && newCol >= 'a' && newRow < Board.BOARD_SIZE && newCol <= 'h') {
+            if (newRow >= 0 && newCol >= 0 && newRow < Board.BOARD_SIZE && newCol <= Board.BOARD_SIZE) {
                 res.add(CellInfo(newCol, newRow))
             }
         }

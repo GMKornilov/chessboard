@@ -1,20 +1,20 @@
 package com.github.fertilewaif.chessboard.model
 
-data class CellInfo(var col: Char, var row: Int) {
+data class CellInfo(var col: Int, var row: Int) {
     fun toIndexes(isWhitePerspective: Boolean): Pair<Int, Int> {
         return if(isWhitePerspective) {
-            Pair(row, col - 'a')
+            Pair(row, col)
         } else {
-            Pair(7 - row, 'h' - col - 1)
+            Pair(7 - row, 7 - col)
         }
     }
 
     companion object {
         fun fromIndexes(row: Int, col: Int, isWhitePerspective: Boolean): CellInfo {
             return if (isWhitePerspective) {
-                CellInfo('a' + col, row)
+                CellInfo(col, row)
             } else {
-                CellInfo('h' - col, 7 - row)
+                CellInfo(7 - col, 7 - row)
             }
         }
     }

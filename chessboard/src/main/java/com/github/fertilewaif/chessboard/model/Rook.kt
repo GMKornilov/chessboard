@@ -45,45 +45,45 @@ class Rook(isWhite: Boolean) : Piece(isWhite) {
 
     override fun getHitMoves(board: Board): List<CellInfo> {
         val res = mutableListOf<CellInfo>()
-        for (col in position.col - 1 downTo 'a') {
-            val piece = board.board[position.row][col - 'a']
+        for (col in position.col - 1 downTo 0) {
+            val piece = board.board[position.row][col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CellInfo.fromIndexes(position.row, col - 'a', true))
+                    res.add(CellInfo(position.row, col))
                 }
                 break
             }
-            res.add(CellInfo.fromIndexes(position.row, col - 'a', true))
+            res.add(CellInfo(position.row, col))
         }
-        for (col in position.col + 1..'h') {
-            val piece = board.board[position.row][col - 'a']
+        for (col in position.col + 1 until Board.BOARD_SIZE) {
+            val piece = board.board[position.row][col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CellInfo.fromIndexes(position.row, col - 'a', true))
+                    res.add(CellInfo(position.row, col))
                 }
                 break
             }
-            res.add(CellInfo.fromIndexes(position.row, col - 'a', true))
+            res.add(CellInfo(position.row, col))
         }
         for (row in position.row downTo 0) {
-            val piece = board.board[row][position.col - 'a']
+            val piece = board.board[row][position.col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CellInfo.fromIndexes(row, position.col - 'a', true))
+                    res.add(CellInfo(row, position.col))
                 }
                 break
             }
-            res.add(CellInfo.fromIndexes(row, position.col - 'a', true))
+            res.add(CellInfo(row, position.col))
         }
         for (row in position.row + 1..7) {
-            val piece = board.board[row][position.col - 'a']
+            val piece = board.board[row][position.col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CellInfo.fromIndexes(row, position.col - 'a', true))
+                    res.add(CellInfo(row, position.col))
                 }
                 break
             }
-            res.add(CellInfo.fromIndexes(row, position.col - 'a', true))
+            res.add(CellInfo(row, position.col))
         }
         return res
     }
@@ -98,8 +98,8 @@ class Rook(isWhite: Boolean) : Piece(isWhite) {
         val deltaCol = sign(colDiff.toDouble()).toInt()
 
         var curRow = position.row + deltaRow
-        var curCol = position.col - 'a' + deltaCol
-        while (curRow != cellInfo.row && curCol != cellInfo.col - 'a') {
+        var curCol = position.col + deltaCol
+        while (curRow != cellInfo.row && curCol != cellInfo.col) {
             if (board.board[curRow][curCol] != null) {
                 return false
             }
