@@ -25,4 +25,8 @@ class TransitionMove(val piece: Piece, val from: CellInfo, val to: CellInfo) : M
                         CellInfo.toAnimationIndexes(to, isWhite))
         )
     }
+
+    override fun getDisplayedCell(isWhite: Boolean): CellInfo {
+        return CellInfo.toAnimationIndexes(to, isWhite)
+    }
 }

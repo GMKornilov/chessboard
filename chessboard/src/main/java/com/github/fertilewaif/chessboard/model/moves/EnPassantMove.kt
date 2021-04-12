@@ -29,4 +29,8 @@ class EnPassantMove(val capturePawn: Pawn, val killedPawn: Pawn, val from: CellI
                 AnimationInfo(killedPawn.drawableRes, CellInfo.toAnimationIndexes(enPassantCell, isWhite), null)
         )
     }
+
+    override fun getDisplayedCell(isWhite: Boolean): CellInfo {
+        return CellInfo.toAnimationIndexes(to, isWhite)
+    }
 }

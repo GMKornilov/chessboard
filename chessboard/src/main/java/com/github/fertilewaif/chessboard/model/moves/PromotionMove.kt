@@ -26,4 +26,8 @@ class PromotionMove(val pawn: Pawn, val from: CellInfo, val to: CellInfo, val pr
                 AnimationInfo(promotedPiece.drawableRes, null, CellInfo.toAnimationIndexes(to, isWhite))
         )
     }
+
+    override fun getDisplayedCell(isWhite: Boolean): CellInfo {
+        return CellInfo.toAnimationIndexes(to, isWhite)
+    }
 }

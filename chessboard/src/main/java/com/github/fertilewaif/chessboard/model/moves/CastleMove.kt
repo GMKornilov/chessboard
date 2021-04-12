@@ -93,4 +93,8 @@ class CastleMove(val king: King, val rook: Rook, val isWhite: Boolean, val isSho
         )
     }
 
+    override fun getDisplayedCell(isWhite: Boolean): CellInfo {
+        return CellInfo.toAnimationIndexes(newKingPosition, isWhite)
+    }
+
 }

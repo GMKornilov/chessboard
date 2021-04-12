@@ -34,4 +34,8 @@ class CaptureMove(val capturePiece: Piece, val killedPiece: Piece, val from: Cel
         )
     }
 
+    override fun getDisplayedCell(isWhite: Boolean): CellInfo {
+        return CellInfo.toAnimationIndexes(to, isWhite)
+    }
+
 }
