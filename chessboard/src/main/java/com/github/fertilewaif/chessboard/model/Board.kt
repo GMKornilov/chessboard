@@ -1,5 +1,9 @@
 package com.github.fertilewaif.chessboard.model
 
+import com.github.fertilewaif.chessboard.model.pieces.Bishop
+import com.github.fertilewaif.chessboard.model.pieces.Piece
+import com.github.fertilewaif.chessboard.model.pieces.Queen
+import com.github.fertilewaif.chessboard.model.pieces.Rook
 import kotlin.math.abs
 import kotlin.math.sign
 
@@ -45,6 +49,14 @@ class Board {
     var blackKingPosition = CellInfo(4, 7)
         private set
 
+
+    fun addPiece(piece: Piece, to: CellInfo) {
+        board[to.row][to.col] = piece
+    }
+
+    fun removePiece(from: CellInfo) {
+        board[from.row][from.col] = null
+    }
     /**
      * checks if given cell is hit by opposite side figures
      */
