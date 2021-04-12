@@ -17,14 +17,6 @@ class Bishop(isWhite: Boolean) : Piece(isWhite) {
         R.drawable.ic_bb
     }
 
-    override fun getLegalMoves(board: Board): List<Move> {
-        // TODO: add pinning
-        val moves = getMoves(board)
-        val res = mutableListOf<Move>()
-
-        return res
-    }
-
     override fun getMoves(board: Board): List<Move> {
         // yeah, I don't like that copy paste too
         val res = mutableListOf<Move>()

@@ -13,7 +13,23 @@ abstract class Piece(val isWhite: Boolean) {
     /**
      * returns list of cells, where piece can legally move
      */
-    abstract fun getLegalMoves(board: Board): List<Move>
+    fun getLegalMoves(board: Board): List<Move> {
+        val moves = getMoves(board)
+        val res = mutableListOf<Move>()
+        for (move in moves) {
+            move.move(board)
+            val kingPos = if (isWhite) {
+                board.whiteKingPosition
+            } else {
+                board.blackKingPosition
+            }
+            if (!board.isHit(kingPos, isWhite)) {
+                res.add(move)
+            }
+            move.undo(board)
+        }
+        return res
+    }
 
     /**
      * returns list of cells, where piece can move(including illegal moves)

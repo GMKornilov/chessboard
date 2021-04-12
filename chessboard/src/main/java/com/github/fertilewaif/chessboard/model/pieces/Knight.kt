@@ -27,14 +27,6 @@ class Knight(isWhite: Boolean) : Piece(isWhite) {
         R.drawable.ic_bn
     }
 
-    override fun getLegalMoves(board: Board): List<Move> {
-        return if (board.isPinned(position, isWhite) != null) {
-            listOf()
-        } else {
-            getMoves(board)
-        }
-    }
-
     override fun getMoves(board: Board): List<Move> {
         val res = mutableListOf<Move>()
         for ((deltaI, deltaJ) in deltas) {

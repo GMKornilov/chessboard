@@ -16,11 +16,6 @@ class Pawn(isWhite: Boolean) : Piece(isWhite) {
         R.drawable.ic_bp
     }
 
-    override fun getLegalMoves(board: Board): List<Move> {
-        // TODO: add pin
-        return getMoves(board)
-    }
-
     override fun getMoves(board: Board): List<Move> {
         val forwardRow = if (isWhite) {
             position.row + 1

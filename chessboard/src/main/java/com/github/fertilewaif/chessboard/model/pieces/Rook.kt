@@ -16,11 +16,6 @@ class Rook(isWhite: Boolean) : Piece(isWhite) {
         R.drawable.ic_br
     }
 
-    override fun getLegalMoves(board: Board): List<Move> {
-        // TODO: add pin
-        return getMoves(board)
-    }
-
     override fun getMoves(board: Board): List<Move> {
         val res = mutableListOf<Move>()
         for (col in position.col - 1 downTo 0) {
