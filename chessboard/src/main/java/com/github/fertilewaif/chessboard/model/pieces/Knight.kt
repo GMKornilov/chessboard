@@ -1,7 +1,11 @@
 package com.github.fertilewaif.chessboard.model.pieces
 
+import com.github.fertilewaif.chessboard.R
 import com.github.fertilewaif.chessboard.model.Board
 import com.github.fertilewaif.chessboard.model.CellInfo
+import com.github.fertilewaif.chessboard.model.moves.CaptureMove
+import com.github.fertilewaif.chessboard.model.moves.Move
+import com.github.fertilewaif.chessboard.model.moves.TransitionMove
 
 class Knight(isWhite: Boolean) : Piece(isWhite) {
     companion object {
@@ -17,7 +21,13 @@ class Knight(isWhite: Boolean) : Piece(isWhite) {
         )
     }
 
-    override fun getLegalMoves(board: Board): List<CellInfo> {
+    override var drawableRes = if (isWhite) {
+        R.drawable.ic_wn
+    } else {
+        R.drawable.ic_bn
+    }
+
+    override fun getLegalMoves(board: Board): List<Move> {
         return if (board.isPinned(position, isWhite) != null) {
             listOf()
         } else {
@@ -25,12 +35,8 @@ class Knight(isWhite: Boolean) : Piece(isWhite) {
         }
     }
 
-    override fun getMoves(board: Board): List<CellInfo> {
-        return getHitMoves(board)
-    }
-
-    override fun getHitMoves(board: Board): List<CellInfo> {
-        val res = mutableListOf<CellInfo>()
+    override fun getMoves(board: Board): List<Move> {
+        val res = mutableListOf<Move>()
         for ((deltaI, deltaJ) in deltas) {
             val row = position.row + deltaI
             val col = position.col + deltaJ
@@ -38,8 +44,11 @@ class Knight(isWhite: Boolean) : Piece(isWhite) {
                 continue
             }
             val piece = board.board[row][col]
-            if (piece == null || (piece.isWhite != isWhite && piece !is King)) {
-                res.add(CellInfo(row, col))
+            val to = CellInfo(row, col)
+            if (piece == null) {
+                res.add(TransitionMove(this, position, to))
+            } else if(piece.isWhite != isWhite && piece !is King) {
+                res.add(CaptureMove(this, piece, position, to))
             }
         }
         return res

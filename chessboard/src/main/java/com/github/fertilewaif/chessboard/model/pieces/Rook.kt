@@ -1,91 +1,67 @@
 package com.github.fertilewaif.chessboard.model.pieces
 
+import com.github.fertilewaif.chessboard.R
 import com.github.fertilewaif.chessboard.model.Board
 import com.github.fertilewaif.chessboard.model.CellInfo
+import com.github.fertilewaif.chessboard.model.moves.CaptureMove
+import com.github.fertilewaif.chessboard.model.moves.Move
+import com.github.fertilewaif.chessboard.model.moves.TransitionMove
 import kotlin.math.abs
 import kotlin.math.sign
 
 class Rook(isWhite: Boolean) : Piece(isWhite) {
-    override fun getLegalMoves(board: Board): List<CellInfo> {
+    override var drawableRes = if (isWhite) {
+        R.drawable.ic_wr
+    } else {
+        R.drawable.ic_br
+    }
+
+    override fun getLegalMoves(board: Board): List<Move> {
         // TODO: add pin
-        val moves = getMoves(board)
-        val pinnerCell = board.isPinned(position, isWhite)
-
-        if (pinnerCell == null) {
-            return moves
-        }
-
-        val rowDiff = abs(pinnerCell.row - position.row)
-        val colDiff = abs(pinnerCell.col - position.col)
-
-        val signRow = sign((pinnerCell.row - position.row).toDouble()).toInt()
-        val signCol = sign((pinnerCell.col - position.col).toDouble()).toInt()
-
-        if (signRow != 0 && signCol != 0) {
-            return listOf()
-        }
-
-        val res = mutableListOf<CellInfo>()
-
-        for (move in moves) {
-            val moveRowDiff = abs(move.row - position.row)
-            val moveColDiff = abs(move.col - position.col)
-
-            val moveRowSign = sign((move.row - position.row).toDouble()).toInt()
-            val moveColSign = sign((move.col - position.col).toDouble()).toInt()
-
-            if (moveRowSign == signRow && moveColSign == signCol && moveRowDiff <= rowDiff && moveColDiff <= colDiff) {
-                res.add(move)
-            }
-        }
-        return res
+        return getMoves(board)
     }
 
-    override fun getMoves(board: Board): List<CellInfo> {
-        return getHitMoves(board)
-    }
-
-    override fun getHitMoves(board: Board): List<CellInfo> {
-        val res = mutableListOf<CellInfo>()
+    override fun getMoves(board: Board): List<Move> {
+        val res = mutableListOf<Move>()
         for (col in position.col - 1 downTo 0) {
             val piece = board.board[position.row][col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CellInfo(position.row, col))
+                    res.add(CaptureMove(this, piece, position, CellInfo(position.row, col)))
                 }
                 break
             }
-            res.add(CellInfo(position.row, col))
+            res.add(TransitionMove(this, position, CellInfo(position.row, col)))
         }
         for (col in position.col + 1 until Board.BOARD_SIZE) {
             val piece = board.board[position.row][col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CellInfo(position.row, col))
+                    res.add(CaptureMove(this, piece, position, CellInfo(position.row, col)))
                 }
                 break
             }
-            res.add(CellInfo(position.row, col))
+            res.add(TransitionMove(this, position, CellInfo(position.row, col)))
         }
         for (row in position.row downTo 0) {
             val piece = board.board[row][position.col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CellInfo(row, position.col))
+                    res.add(CaptureMove(this, piece, position, CellInfo(row, position.col)))
                 }
                 break
             }
-            res.add(CellInfo(row, position.col))
+            res.add(TransitionMove(this, position, CellInfo(row, position.col)))
         }
         for (row in position.row + 1..7) {
             val piece = board.board[row][position.col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CellInfo(row, position.col))
+                    res.add(CaptureMove(this, piece, position, CellInfo(row, position.col)))
                 }
                 break
             }
-            res.add(CellInfo(row, position.col))
+            res.add(TransitionMove(this, position, CellInfo(row, position.col)))
         }
         return res
     }

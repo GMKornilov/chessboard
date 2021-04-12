@@ -1,89 +1,75 @@
 package com.github.fertilewaif.chessboard.model.pieces
 
+import com.github.fertilewaif.chessboard.R
 import com.github.fertilewaif.chessboard.model.Board
 import com.github.fertilewaif.chessboard.model.CellInfo
+import com.github.fertilewaif.chessboard.model.moves.CaptureMove
+import com.github.fertilewaif.chessboard.model.moves.EnPassantMove
+import com.github.fertilewaif.chessboard.model.moves.Move
+import com.github.fertilewaif.chessboard.model.moves.TransitionMove
 import kotlin.math.abs
 
 class Pawn(isWhite: Boolean) : Piece(isWhite) {
-    override fun getLegalMoves(board: Board): List<CellInfo> {
-        // TODO: add pin
-        val pinnerCell = board.isPinned(position, isWhite)
-        if (pinnerCell == null) {
-            return getMoves(board)
-        }
-        val forwardRow = if (isWhite) {
-            position.row + 1
-        } else {
-            position.row - 1
-        }
-        if (pinnerCell.col == pinnerCell.col) {
-            val res = mutableListOf<CellInfo>()
-            if (board.board[forwardRow][position.col] == null) {
-                res.add(CellInfo(position.col, forwardRow))
-            }
-            if (isWhite && position.row == 1 && board.board[position.row + 2][position.col] == null) {
-                res.add(CellInfo(position.row + 2, position.col))
-            }
-            if (!isWhite && position.row == 6 && board.board[position.row - 2][position.col] == null) {
-                res.add(CellInfo(position.row - 2, position.col))
-            }
-            return res
-        }
-        if (pinnerCell.row != forwardRow || abs((pinnerCell.col - position.col)) != 1) {
-            return listOf()
-        }
-        return listOf(pinnerCell)
+    override var drawableRes = if (isWhite) {
+        R.drawable.ic_wp
+    } else {
+        R.drawable.ic_bp
     }
 
-    override fun getMoves(board: Board): List<CellInfo> {
+    override fun getLegalMoves(board: Board): List<Move> {
+        // TODO: add pin
+        return getMoves(board)
+    }
+
+    override fun getMoves(board: Board): List<Move> {
         val forwardRow = if (isWhite) {
             position.row + 1
         } else {
             position.row - 1
         }
 
-        val res = mutableListOf<CellInfo>()
+        val res = mutableListOf<Move>()
 
         if (board.board[forwardRow][position.col] == null) {
-            res.add(CellInfo(forwardRow, position.col))
+            res.add(TransitionMove(this, position, CellInfo(forwardRow, position.col)))
         }
         if (position.col != Board.BOARD_SIZE - 1 && board.board[forwardRow][position.col + 1]?.isWhite != isWhite) {
-            res.add(CellInfo(forwardRow, position.col + 1))
+            // board.board[forwardRow][position.col + 1] is not null here, because then it wont pass if
+            res.add(CaptureMove(this, board.board[forwardRow][position.col + 1]!!, position, CellInfo(forwardRow, position.col + 1)))
         }
         if (position.col != 0 && board.board[forwardRow][position.col - 1]?.isWhite != isWhite) {
-            res.add(CellInfo(forwardRow, position.col - 1))
+            res.add(CaptureMove(this, board.board[forwardRow][position.col - 1]!!, position, CellInfo(forwardRow, position.col - 1)))
         }
 
         if (board.canEnPassant) {
+            val enPassantPawn = board.board[board.enPassantCellInfo.row][board.enPassantCellInfo.col] as Pawn
             if (board.enPassantCellInfo.col - 1 == position.col) {
-                res.add(CellInfo(forwardRow, position.col + 1))
+                res.add(
+                        EnPassantMove(this,
+                                enPassantPawn,
+                                position,
+                                CellInfo(forwardRow, position.col + 1),
+                                board.enPassantCellInfo
+                        )
+                )
             }
             if (board.enPassantCellInfo.col + 1 == position.col) {
-                res.add(CellInfo(forwardRow, position.col - 1))
+                res.add(
+                        EnPassantMove(this,
+                                enPassantPawn,
+                                position,
+                                CellInfo(forwardRow, position.col - 1),
+                                board.enPassantCellInfo
+                        )
+                )
             }
         }
 
         if (isWhite && position.row == 1 && board.board[position.row + 2][position.col] == null) {
-            res.add(CellInfo(position.row + 2, position.col))
+            res.add(TransitionMove(this, position, CellInfo(position.row + 2, position.col)))
         }
         if (!isWhite && position.row == 6 && board.board[position.row - 2][position.col] == null) {
-            res.add(CellInfo(position.row - 2, position.col))
-        }
-        return res
-    }
-
-    override fun getHitMoves(board: Board): List<CellInfo> {
-        val forwardRow = if (isWhite) {
-            position.row + 1
-        } else {
-            position.row - 1
-        }
-        val res = mutableListOf<CellInfo>()
-        if (position.col != Board.BOARD_SIZE && board.board[forwardRow][position.col + 1]?.isWhite != isWhite) {
-            res.add(CellInfo(forwardRow, position.col + 1))
-        }
-        if (position.col != 0 && board.board[forwardRow][position.col - 1]?.isWhite != isWhite) {
-            res.add(CellInfo(forwardRow, position.col - 1))
+            res.add(TransitionMove(this, position, CellInfo(position.row - 2, position.col)))
         }
         return res
     }

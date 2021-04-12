@@ -1,63 +1,44 @@
 package com.github.fertilewaif.chessboard.model.pieces
 
+import com.github.fertilewaif.chessboard.R
 import com.github.fertilewaif.chessboard.model.Board
 import com.github.fertilewaif.chessboard.model.CellInfo
+import com.github.fertilewaif.chessboard.model.moves.CaptureMove
+import com.github.fertilewaif.chessboard.model.moves.Move
+import com.github.fertilewaif.chessboard.model.moves.TransitionMove
 import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sign
 
 class Bishop(isWhite: Boolean) : Piece(isWhite) {
-    override fun getLegalMoves(board: Board): List<CellInfo> {
+    override var drawableRes = if (isWhite) {
+        R.drawable.ic_wb
+    } else {
+        R.drawable.ic_bb
+    }
+
+    override fun getLegalMoves(board: Board): List<Move> {
         // TODO: add pinning
         val moves = getMoves(board)
-        val pinnerCell = board.isPinned(position, isWhite)
-        if (pinnerCell == null) {
-            return moves
-        }
-        val rowDiff = abs(pinnerCell.row - position.row)
-        val colDiff = abs(pinnerCell.col - position.col)
+        val res = mutableListOf<Move>()
 
-        val signRow = sign((pinnerCell.row - position.row).toDouble()).toInt()
-        val signCol = sign((pinnerCell.col - position.col).toDouble()).toInt()
-
-        if (signRow == 0 || signCol == 0) {
-            return listOf()
-        }
-
-        val res = mutableListOf<CellInfo>()
-
-        for (move in moves) {
-            val moveRowDiff = abs(move.row - position.row)
-            val moveColDiff = abs(move.col - position.col)
-
-            val moveRowSign = sign((move.row - position.row).toDouble()).toInt()
-            val moveColSign = sign((move.col - position.col).toDouble()).toInt()
-
-            if (moveRowSign == signRow && moveColSign == signCol && moveRowDiff <= rowDiff && moveColDiff <= colDiff) {
-                res.add(move)
-            }
-        }
         return res
     }
 
-    override fun getMoves(board: Board): List<CellInfo> {
-        return getHitMoves(board)
-    }
-
-    override fun getHitMoves(board: Board): List<CellInfo> {
+    override fun getMoves(board: Board): List<Move> {
         // yeah, I don't like that copy paste too
-        val res = mutableListOf<CellInfo>()
+        val res = mutableListOf<Move>()
         for (deltaUpRight in 1..min(7 - position.row, 7 - position.col)) {
             val row = position.row + deltaUpRight
             val col = position.col + deltaUpRight
             val piece = board.board[row][col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CellInfo(row, col))
+                    res.add(CaptureMove(this, piece, position, CellInfo(row, col)))
                 }
                 break
             }
-            res.add(CellInfo(row, col))
+            res.add(TransitionMove(this, position, CellInfo(row, col)))
         }
         for (deltaDownRight in 1..min(position.row, 7 - position.col)) {
             val row = position.row + deltaDownRight
@@ -65,11 +46,11 @@ class Bishop(isWhite: Boolean) : Piece(isWhite) {
             val piece = board.board[row][col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CellInfo(row, col))
+                    res.add(CaptureMove(this, piece, position, CellInfo(row, col)))
                 }
                 break
             }
-            res.add(CellInfo(row, col))
+            res.add(TransitionMove(this, position, CellInfo(row, col)))
         }
         for (deltaUpLeft in 1..min(7 - position.row, position.col)) {
             val row = position.row + deltaUpLeft
@@ -77,11 +58,11 @@ class Bishop(isWhite: Boolean) : Piece(isWhite) {
             val piece = board.board[row][col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CellInfo(row, col))
+                    res.add(CaptureMove(this, piece, position, CellInfo(row, col)))
                 }
                 break
             }
-            res.add(CellInfo(row, col))
+            res.add(TransitionMove(this, position, CellInfo(row, col)))
         }
         for (deltaDownLeft in 1..min(position.row, position.col)) {
             val row = position.row + deltaDownLeft
@@ -89,14 +70,15 @@ class Bishop(isWhite: Boolean) : Piece(isWhite) {
             val piece = board.board[row][col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CellInfo(row, col))
+                    res.add(CaptureMove(this, piece, position, CellInfo(row, col)))
                 }
                 break
             }
-            res.add(CellInfo(row, col))
+            res.add(TransitionMove(this, position, CellInfo(row, col)))
         }
         return res
     }
+
 
     override fun canHit(cellInfo: CellInfo, board: Board): Boolean {
         val rowDiff = cellInfo.row - position.row
