@@ -1,6 +1,8 @@
-package com.github.fertilewaif.chessboard.model
+package com.github.fertilewaif.chessboard.model.pieces
 
 import androidx.annotation.DrawableRes
+import com.github.fertilewaif.chessboard.model.Board
+import com.github.fertilewaif.chessboard.model.CellInfo
 
 abstract class Piece(val isWhite: Boolean) {
     @DrawableRes var drawableRes: Int = 0

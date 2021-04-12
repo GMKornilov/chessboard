@@ -1,4 +1,7 @@
-package com.github.fertilewaif.chessboard.model
+package com.github.fertilewaif.chessboard.model.pieces
+
+import com.github.fertilewaif.chessboard.model.Board
+import com.github.fertilewaif.chessboard.model.CellInfo
 
 class Knight(isWhite: Boolean) : Piece(isWhite) {
     companion object {

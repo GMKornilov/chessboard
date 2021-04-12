@@ -1,5 +1,7 @@
-package com.github.fertilewaif.chessboard.model
+package com.github.fertilewaif.chessboard.model.pieces
 
+import com.github.fertilewaif.chessboard.model.Board
+import com.github.fertilewaif.chessboard.model.CellInfo
 import kotlin.math.abs
 
 class Pawn(isWhite: Boolean) : Piece(isWhite) {
