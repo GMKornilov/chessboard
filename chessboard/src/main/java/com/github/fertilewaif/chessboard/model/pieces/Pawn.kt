@@ -3,10 +3,7 @@ package com.github.fertilewaif.chessboard.model.pieces
 import com.github.fertilewaif.chessboard.R
 import com.github.fertilewaif.chessboard.model.Board
 import com.github.fertilewaif.chessboard.model.CellInfo
-import com.github.fertilewaif.chessboard.model.moves.CaptureMove
-import com.github.fertilewaif.chessboard.model.moves.EnPassantMove
-import com.github.fertilewaif.chessboard.model.moves.Move
-import com.github.fertilewaif.chessboard.model.moves.TransitionMove
+import com.github.fertilewaif.chessboard.model.moves.*
 import kotlin.math.abs
 
 class Pawn(isWhite: Boolean) : Piece(isWhite) {
@@ -23,17 +20,49 @@ class Pawn(isWhite: Boolean) : Piece(isWhite) {
             position.row - 1
         }
 
+        val endRow = if (isWhite) 7 else 0
+        val startRow = if (isWhite) 1 else 6
+        val deltaStart = if(isWhite) 2 else -2
+
         val res = mutableListOf<Move>()
 
         if (board.board[forwardRow][position.col] == null) {
-            res.add(TransitionMove(this, position, CellInfo(forwardRow, position.col)))
+            val to = CellInfo(forwardRow, position.col)
+            if (forwardRow == endRow) {
+                res.add(PromotionMove(this, null, position, to, Queen(isWhite)))
+                res.add(PromotionMove(this, null, position, to, Rook(isWhite)))
+                res.add(PromotionMove(this, null, position, to, Bishop(isWhite)))
+                res.add(PromotionMove(this, null, position, to, Knight(isWhite)))
+            }
+            else {
+                res.add(TransitionMove(this, position, to))
+            }
         }
         if (position.col != Board.BOARD_SIZE - 1 && board.board[forwardRow][position.col + 1]?.isWhite != isWhite) {
-            // board.board[forwardRow][position.col + 1] is not null here, because then it wont pass if
-            res.add(CaptureMove(this, board.board[forwardRow][position.col + 1]!!, position, CellInfo(forwardRow, position.col + 1)))
+            // board.board[forwardRow][position.col + 1] is not null here, because then it wont pass
+            // condition above
+            val capturedPiece = board.board[forwardRow][position.col + 1]!!
+            val to = CellInfo(forwardRow, position.col + 1)
+            if (forwardRow == endRow) {
+                res.add(PromotionMove(this, capturedPiece, position, to, Queen(isWhite)))
+                res.add(PromotionMove(this, capturedPiece, position, to, Rook(isWhite)))
+                res.add(PromotionMove(this, capturedPiece, position, to, Bishop(isWhite)))
+                res.add(PromotionMove(this, capturedPiece, position, to, Knight(isWhite)))
+            } else {
+                res.add(CaptureMove(this, capturedPiece, position, to))
+            }
         }
         if (position.col != 0 && board.board[forwardRow][position.col - 1]?.isWhite != isWhite) {
-            res.add(CaptureMove(this, board.board[forwardRow][position.col - 1]!!, position, CellInfo(forwardRow, position.col - 1)))
+            val capturedPiece = board.board[forwardRow][position.col - 1]!!
+            val to = CellInfo(forwardRow, position.col - 1)
+            if (forwardRow == endRow) {
+                res.add(PromotionMove(this, capturedPiece, position, to, Queen(isWhite)))
+                res.add(PromotionMove(this, capturedPiece, position, to, Rook(isWhite)))
+                res.add(PromotionMove(this, capturedPiece, position, to, Bishop(isWhite)))
+                res.add(PromotionMove(this, capturedPiece, position, to, Knight(isWhite)))
+            } else {
+                res.add(CaptureMove(this, capturedPiece, position, to))
+            }
         }
 
         if (board.canEnPassant) {
@@ -60,11 +89,8 @@ class Pawn(isWhite: Boolean) : Piece(isWhite) {
             }
         }
 
-        if (isWhite && position.row == 1 && board.board[position.row + 2][position.col] == null) {
-            res.add(TransitionMove(this, position, CellInfo(position.row + 2, position.col)))
-        }
-        if (!isWhite && position.row == 6 && board.board[position.row - 2][position.col] == null) {
-            res.add(TransitionMove(this, position, CellInfo(position.row - 2, position.col)))
+        if (position.row == startRow && board.board[position.row + deltaStart][position.col] == null) {
+            res.add(TransitionMove(this, position, CellInfo(position.row + deltaStart, position.col)))
         }
         return res
     }
