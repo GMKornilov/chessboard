@@ -41,26 +41,26 @@ class Pawn(isWhite: Boolean) : Piece(isWhite) {
         if (position.col != Board.BOARD_SIZE - 1 && board.board[forwardRow][position.col + 1]?.isWhite != isWhite) {
             // board.board[forwardRow][position.col + 1] is not null here, because then it wont pass
             // condition above
-            val capturedPiece = board.board[forwardRow][position.col + 1]!!
+            val capturedPiece = board.board[forwardRow][position.col + 1]
             val to = CellInfo(forwardRow, position.col + 1)
             if (forwardRow == endRow) {
                 res.add(PromotionMove(this, capturedPiece, position, to, Queen(isWhite)))
                 res.add(PromotionMove(this, capturedPiece, position, to, Rook(isWhite)))
                 res.add(PromotionMove(this, capturedPiece, position, to, Bishop(isWhite)))
                 res.add(PromotionMove(this, capturedPiece, position, to, Knight(isWhite)))
-            } else {
+            } else if (capturedPiece != null) {
                 res.add(CaptureMove(this, capturedPiece, position, to))
             }
         }
         if (position.col != 0 && board.board[forwardRow][position.col - 1]?.isWhite != isWhite) {
-            val capturedPiece = board.board[forwardRow][position.col - 1]!!
+            val capturedPiece = board.board[forwardRow][position.col - 1]
             val to = CellInfo(forwardRow, position.col - 1)
             if (forwardRow == endRow) {
                 res.add(PromotionMove(this, capturedPiece, position, to, Queen(isWhite)))
                 res.add(PromotionMove(this, capturedPiece, position, to, Rook(isWhite)))
                 res.add(PromotionMove(this, capturedPiece, position, to, Bishop(isWhite)))
                 res.add(PromotionMove(this, capturedPiece, position, to, Knight(isWhite)))
-            } else {
+            } else if (capturedPiece != null){
                 res.add(CaptureMove(this, capturedPiece, position, to))
             }
         }
