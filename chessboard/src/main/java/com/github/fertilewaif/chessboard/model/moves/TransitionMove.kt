@@ -3,9 +3,10 @@ package com.github.fertilewaif.chessboard.model.moves
 import com.github.fertilewaif.chessboard.model.AnimationInfo
 import com.github.fertilewaif.chessboard.model.Board
 import com.github.fertilewaif.chessboard.model.CellInfo
+import com.github.fertilewaif.chessboard.model.pieces.King
 import com.github.fertilewaif.chessboard.model.pieces.Piece
 
-class TransitionMove(val piece: Piece, val from: CellInfo, val to: CellInfo) : Move {
+open class TransitionMove(val piece: Piece, val from: CellInfo, val to: CellInfo) : Move {
     override fun move(board: Board) {
         board.removePiece(from)
         board.addPiece(piece, to)

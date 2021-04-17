@@ -5,7 +5,7 @@ import com.github.fertilewaif.chessboard.model.Board
 import com.github.fertilewaif.chessboard.model.CellInfo
 import com.github.fertilewaif.chessboard.model.pieces.Piece
 
-class CaptureMove(val capturePiece: Piece, val killedPiece: Piece, val from: CellInfo, val to: CellInfo) : Move {
+open class CaptureMove(val capturePiece: Piece, val killedPiece: Piece, val from: CellInfo, val to: CellInfo) : Move {
     override fun move(board: Board) {
         board.removePiece(from)
         board.removePiece(to)
@@ -25,12 +25,12 @@ class CaptureMove(val capturePiece: Piece, val killedPiece: Piece, val from: Cel
 
     override fun getAnimationsInfo(isWhite: Boolean): List<AnimationInfo> {
         return listOf(
-                AnimationInfo(capturePiece.drawableRes,
-                        CellInfo.toAnimationIndexes(from, isWhite),
-                        CellInfo.toAnimationIndexes(to, isWhite)),
                 AnimationInfo(killedPiece.drawableRes,
                         CellInfo.toAnimationIndexes(to, isWhite),
-                        null)
+                        null),
+                AnimationInfo(capturePiece.drawableRes,
+                        CellInfo.toAnimationIndexes(from, isWhite),
+                        CellInfo.toAnimationIndexes(to, isWhite))
         )
     }
 

@@ -22,32 +22,32 @@ class Board {
     val blackPieces = mutableListOf<Piece>()
 
     var canWhiteCastleShort = true
-        private set
+        internal set
     var canWhiteCastleLong = true
-        private set
+        internal set
     var canBlackCastleShort = true
-        private set
+        internal set
     var canBlackCastleLong = true
-        private set
+        internal set
 
     var canEnPassant = false
-        private set
+        internal set
     var enPassantCellInfo = CellInfo(0, 0)
-        private set
+        internal set
 
     var isWhiteTurn = true
-        private set
+        internal set
 
     var fiftyMovesRule = 0
-        private set
+        internal set
 
     var turnNumber = 1
-        private set
+        internal set
 
     var whiteKingPosition = CellInfo(4, 0)
-        private set
+        internal set
     var blackKingPosition = CellInfo(4, 7)
-        private set
+        internal set
 
 
     fun addPiece(piece: Piece, to: CellInfo) {
