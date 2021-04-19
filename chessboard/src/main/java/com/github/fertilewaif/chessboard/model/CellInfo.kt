@@ -3,19 +3,19 @@ package com.github.fertilewaif.chessboard.model
 data class CellInfo(var col: Int, var row: Int) {
 
     companion object {
-        fun fromIndexes(row: Int, col: Int, isWhitePerspective: Boolean): CellInfo {
+        fun fromAnimationIndexes(row: Int, col: Int, isWhitePerspective: Boolean): CellInfo {
             return if (isWhitePerspective) {
-                CellInfo(col, row)
+                CellInfo(col, 7 - row)
             } else {
-                CellInfo(7 - col, 7 - row)
+                CellInfo(7 - col, row)
             }
         }
 
         fun toAnimationIndexes(cellInfo: CellInfo, isWhitePerspective: Boolean): CellInfo {
             return if(isWhitePerspective) {
-                CellInfo(cellInfo.row, cellInfo.col)
+                CellInfo(7 - cellInfo.row, cellInfo.col)
             } else {
-                CellInfo(7 - cellInfo.row, 7 - cellInfo.col)
+                CellInfo(cellInfo.row, 7 - cellInfo.col)
             }
         }
     }
