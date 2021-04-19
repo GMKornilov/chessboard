@@ -1,13 +1,9 @@
 package com.github.fertilewaif.chessboard.model
 
-import com.github.fertilewaif.chessboard.model.pieces.Bishop
-import com.github.fertilewaif.chessboard.model.pieces.Piece
-import com.github.fertilewaif.chessboard.model.pieces.Queen
-import com.github.fertilewaif.chessboard.model.pieces.Rook
-import kotlin.math.abs
-import kotlin.math.sign
+import com.github.fertilewaif.chessboard.model.pieces.*
+import java.lang.Exception
 
-class Board {
+class Board() {
     companion object {
         const val BOARD_SIZE = 8
     }
@@ -16,7 +12,8 @@ class Board {
      * cell-centered representation of the board
      * contains null if there is no figure on the cell
      */
-    val board: MutableList<MutableList<Piece?>> = MutableList(BOARD_SIZE) { MutableList(BOARD_SIZE) { null } }
+    //val board: MutableList<MutableList<Piece?>> = MutableList(BOARD_SIZE) { MutableList(BOARD_SIZE) { null } }
+    val board = Array<Array<Piece?>>(BOARD_SIZE) { Array(BOARD_SIZE) { null } }
 
     val whitePieces = mutableListOf<Piece>()
     val blackPieces = mutableListOf<Piece>()
@@ -57,6 +54,7 @@ class Board {
     fun removePiece(from: CellInfo) {
         board[from.row][from.col] = null
     }
+
     /**
      * checks if given cell is hit by opposite side figures
      */
@@ -74,66 +72,88 @@ class Board {
         return false
     }
 
-    /**
-     * checks if figure on given cell is pinned by opposite pieces,
-     * return null, if piece is not pinned
-     */
-    fun isPinned(position: CellInfo, isWhite: Boolean): CellInfo? {
-        val kingPosition = (if (isWhite) {
-            whiteKingPosition
-        } else {
-            blackKingPosition
-        })
-        val rowDiff = kingPosition.row - position.row
-        val colDiff = kingPosition.col - position.col
-        // if king and piece are not on same diagonal/horizontal/vertical, it can't be pinned
-        if (abs(rowDiff) != 0 && abs(colDiff) != 0 && abs(colDiff) != abs(rowDiff)) {
-            return null
-        }
-        val deltaRow = sign(rowDiff.toDouble()).toInt()
-        val deltaCol = sign(colDiff.toDouble()).toInt()
-        //check if there are no pieces between king and given cell
-        var row = kingPosition.row + deltaRow
-        var col = kingPosition.col + deltaCol
-        while (row != position.row || col != position.col) {
-            if (board[row][col] != null) {
-                // there is a piece between king and given cell, thus it can't be pinned
-                return null
-            }
-            row += deltaRow
-            col += deltaCol
-        }
-        row = position.row + deltaRow
-        col = position.col + deltaCol
-        while (row >= 0 && col >= 0 && row < BOARD_SIZE && col < BOARD_SIZE) {
-            val piece = board[row][col]
-            if (piece == null) {
-                row += deltaRow
-                col += deltaCol
-                continue
-            }
-            if (piece.isWhite == isWhite) {
-                // piece can't be pinned by piece of the same color
-                return null
-            }
-            if (piece is Queen) {
-                // queen can pin to all directions
-                return piece.position
-            }
-            if (deltaRow == 0 || deltaCol == 0 && piece is Rook) {
-                // only rook can pin horizontally/vertically
-                return piece.position
-            }
-            if (deltaRow != 0 && deltaCol != 0 && piece is Bishop) {
-                // only bishop can pin diagonally
-                return piece.position
-            }
-        }
-        return null
-    }
-
     fun move(from: CellInfo, to: CellInfo): Boolean {
         TODO("implement me")
+    }
+
+    fun parseFEN(fen: String) {
+        // TODO: clear field
+        val fieldPieces = fen.substring(0, fen.indexOf(' '))
+        val state = fen.substring(fen.indexOf(' ') + 1)
+
+        val lines = fieldPieces.split('/')
+        var row = 7
+        for (line in lines) {
+            var col = 0
+            for (char in line) {
+                if (char.isDigit()) {
+                    col += Character.getNumericValue(char)
+                } else {
+                    val cellInfo = CellInfo(col, row)
+                    val isWhite = char.isUpperCase()
+                    val piece = when (char.toLowerCase()) {
+                        'p' -> Pawn(isWhite)
+                        'q' -> Queen(isWhite)
+                        'r' -> Rook(isWhite)
+                        'n' -> Knight(isWhite)
+                        'b' -> Bishop(isWhite)
+                        'k' -> {
+                            if (isWhite) {
+                                whiteKingPosition = cellInfo
+                            } else {
+                                blackKingPosition = cellInfo
+                            }
+                            King(isWhite)
+                        }
+                        else -> throw FenParseException("no piece with notation $char")
+                    }
+                    piece.position = cellInfo
+                    board[cellInfo.row][cellInfo.col] = piece
+                    col++
+                }
+            }
+            row--
+        }
+        isWhiteTurn = state[0] == 'w'
+
+        canWhiteCastleLong = false
+        canWhiteCastleShort = false
+        canBlackCastleLong = false
+        canBlackCastleShort = false
+
+        // rest of fen contains information in following format:
+        // <white castle info or - > <black castle info or - > <en passant pawn or - >
+        // <semiturns count> <turn number>
+
+        if (state.contains('K')) {
+            canWhiteCastleShort = true
+        }
+        if (state.contains('Q')) {
+            canWhiteCastleLong = true
+        }
+        if (state.contains('k')) {
+            canBlackCastleShort = true
+        }
+        if (state.contains('q')) {
+            canBlackCastleLong = true
+        }
+
+        val extraInfo = state.split(' ')
+        if (extraInfo.size >= 3) {
+            val enPassantInfo = extraInfo[2]
+            if (enPassantInfo != "-") {
+                val enPassantCol = enPassantInfo[0] - 'a'
+                val enPassantRow = Character.getNumericValue(enPassantInfo[1])
+                canEnPassant = true
+                enPassantCellInfo = CellInfo(enPassantCol, enPassantRow)
+            }
+        }
+        if (extraInfo.size >= 4) {
+            fiftyMovesRule = extraInfo[3].toInt()
+        }
+        if (extraInfo.size >= 5) {
+            turnNumber = extraInfo[4].toInt()
+        }
     }
 
     fun toFen(): String {
@@ -197,5 +217,9 @@ class Board {
 
         res.append(turnNumber)
         return res.toString()
+    }
+
+    init {
+        parseFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
     }
 }
