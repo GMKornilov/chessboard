@@ -1,4 +1,4 @@
-package com.github.fertilewaif.chessboard
+package com.github.gmkornilov.chessboard
 
 import org.junit.Test
 
