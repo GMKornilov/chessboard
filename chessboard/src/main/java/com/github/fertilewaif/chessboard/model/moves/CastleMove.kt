@@ -73,8 +73,8 @@ class CastleMove(val king: King, val rook: Rook, val isWhite: Boolean, val isSho
         board.addPiece(king, kingPosition)
         board.addPiece(king, rookPosition)
 
-        king.position = newKingPosition
-        rook.position = newRookPosition
+        king.position = kingPosition
+        rook.position = rookPosition
 
         // TODO: restore board info about castling
     }

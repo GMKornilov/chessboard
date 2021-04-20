@@ -36,7 +36,7 @@ class Rook(isWhite: Boolean) : Piece(isWhite) {
             }
             res.add(RookTransitionMove(this, position, CellInfo(col, position.row)))
         }
-        for (row in position.row downTo 0) {
+        for (row in position.row - 1 downTo 0) {
             val piece = board.board[row][position.col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
