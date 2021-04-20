@@ -13,9 +13,9 @@ data class CellInfo(var col: Int, var row: Int) {
 
         fun toAnimationIndexes(cellInfo: CellInfo, isWhitePerspective: Boolean): CellInfo {
             return if(isWhitePerspective) {
-                CellInfo(7 - cellInfo.row, cellInfo.col)
+                CellInfo(cellInfo.col, 7 - cellInfo.row)
             } else {
-                CellInfo(cellInfo.row, 7 - cellInfo.col)
+                CellInfo(7 - cellInfo.col, cellInfo.row)
             }
         }
     }

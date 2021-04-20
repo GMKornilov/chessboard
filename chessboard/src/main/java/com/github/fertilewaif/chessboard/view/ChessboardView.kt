@@ -93,9 +93,9 @@ class ChessboardView @JvmOverloads constructor(
         sideX = (width - boardSize) / 2f
         sideY = (width - boardSize) / 2f
 
-        drawMoves(canvas)
         drawCells(canvas)
         drawPieces(canvas)
+        drawMoves(canvas)
     }
 
     override fun onDragEvent(event: DragEvent?): Boolean {
@@ -198,8 +198,8 @@ class ChessboardView @JvmOverloads constructor(
         val sz = 2 * cellSize / 3
         drawable.setBounds(0, 0, sz.toInt(), sz.toInt())
 
-        val left = sideX + drawPosition.row * cellSize + (cellSize - sz) / 2
-        val top = sideY + drawPosition.col * cellSize + (cellSize - sz) / 2
+        val left = sideX + drawPosition.col * cellSize + (cellSize - sz) / 2
+        val top = sideY + drawPosition.row * cellSize + (cellSize - sz) / 2
 
         canvas.translate(left, top)
         drawable.draw(canvas)
