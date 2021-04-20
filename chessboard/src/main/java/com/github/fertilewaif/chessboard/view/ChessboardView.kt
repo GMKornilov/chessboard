@@ -63,7 +63,7 @@ class ChessboardView @JvmOverloads constructor(
 
     private val darkColor = Color.parseColor("#769656")
     private val lightColor = Color.parseColor("#eeeed2")
-    private val moveColor = Color.RED
+    private val moveColor = Color.parseColor("#B2C294")
 
     private var sideX = 10f
     private var sideY = 10f
@@ -143,40 +143,18 @@ class ChessboardView @JvmOverloads constructor(
 
         val cellInfo = move.getDisplayedCell(isWhite)
         val boardCellInfo = CellInfo.fromAnimationIndexes(cellInfo.row, cellInfo.col, isWhite)
+        var radius = cellSize / 6
         if (board.board[boardCellInfo.row][boardCellInfo.col] != null) {
-            val trianglesOffsets: List<Pair<Float, Float>> = listOf(
-                Pair(0f, cellSize / 8f),
-                Pair(cellSize, -cellSize / 8f)
-            )
-            val baseX = sideX + cellInfo.col * cellSize
-            val baseY = sideY + cellInfo.row * cellSize
-            for (offsetX in trianglesOffsets) {
-                for (offsetY in trianglesOffsets) {
-                    val point1 = Pair(baseX + offsetX.first, baseY + offsetY.first)
-                    val point2 = Pair(point1.first + offsetX.second, point1.second)
-                    val point3 = Pair(point1.first, point1.second + offsetY.second)
-                    paint.style = Paint.Style.FILL
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = cellSize / 15
+            radius = cellSize / 2.15f
 
-                    val path = Path()
-                    path.moveTo(point1.first, point1.second)
-                    path.lineTo(point2.first, point2.second)
 
-                    path.moveTo(point2.first, point2.second)
-                    path.lineTo(point3.first, point3.second)
-
-                    path.moveTo(point3.first, point3.second)
-                    path.lineTo(point1.first, point1.second)
-                    path.close()
-
-                    canvas.drawPath(path, paint)
-                }
-            }
-
-        } else {
-            val xCenter = sideX + cellInfo.col * cellSize + cellSize / 2
-            val yCenter = sideY + cellInfo.row * cellSize + cellSize / 2
-            canvas.drawCircle(xCenter, yCenter, cellSize / 4, paint)
+            //paint.alpha = 200
         }
+        val xCenter = sideX + cellInfo.col * cellSize + cellSize / 2
+        val yCenter = sideY + cellInfo.row * cellSize + cellSize / 2
+        canvas.drawCircle(xCenter, yCenter, radius, paint)
     }
 
     private fun drawPieces(canvas: Canvas) {
@@ -195,7 +173,7 @@ class ChessboardView @JvmOverloads constructor(
 
         val drawPosition = CellInfo.toAnimationIndexes(piece.position, isWhite)
 
-        val sz = 2 * cellSize / 3
+        val sz = 6 * cellSize / 7
         drawable.setBounds(0, 0, sz.toInt(), sz.toInt())
 
         val left = sideX + drawPosition.col * cellSize + (cellSize - sz) / 2
