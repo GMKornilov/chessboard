@@ -20,7 +20,7 @@ open class CaptureMove(val capturePiece: Piece, val killedPiece: Piece, val from
         board.addPiece(capturePiece, from)
         board.addPiece(killedPiece, to)
         capturePiece.position = from
-        capturePiece.position = to
+        killedPiece.position = to
     }
 
     override fun getAnimationsInfo(isWhite: Boolean): List<AnimationInfo> {

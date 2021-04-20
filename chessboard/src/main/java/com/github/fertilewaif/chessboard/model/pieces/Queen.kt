@@ -3,7 +3,9 @@ package com.github.fertilewaif.chessboard.model.pieces
 import com.github.fertilewaif.chessboard.R
 import com.github.fertilewaif.chessboard.model.Board
 import com.github.fertilewaif.chessboard.model.CellInfo
+import com.github.fertilewaif.chessboard.model.moves.CaptureMove
 import com.github.fertilewaif.chessboard.model.moves.Move
+import com.github.fertilewaif.chessboard.model.moves.TransitionMove
 
 class Queen(isWhite: Boolean) : Piece(isWhite) {
     val rook = Rook(isWhite)
@@ -26,7 +28,14 @@ class Queen(isWhite: Boolean) : Piece(isWhite) {
     override fun getMoves(board: Board): List<Move> {
         val resRook = rook.getMoves(board)
         val resBishop = bishop.getMoves(board)
-        return resRook + resBishop
+        val res = mutableListOf<Move>()
+        for (move in resRook + resBishop) {
+            when(move) {
+                is CaptureMove -> res.add(CaptureMove(this, move.killedPiece, move.from, move.to))
+                is TransitionMove -> res.add(TransitionMove(this, move.from, move.to))
+            }
+        }
+        return res
     }
 
     override fun canHit(cellInfo: CellInfo, board: Board): Boolean {
