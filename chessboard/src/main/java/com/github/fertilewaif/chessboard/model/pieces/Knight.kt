@@ -36,7 +36,7 @@ class Knight(isWhite: Boolean) : Piece(isWhite) {
                 continue
             }
             val piece = board.board[row][col]
-            val to = CellInfo(row, col)
+            val to = CellInfo(col, row)
             if (piece == null) {
                 res.add(TransitionMove(this, position, to))
             } else if(piece.isWhite != isWhite && piece !is King) {

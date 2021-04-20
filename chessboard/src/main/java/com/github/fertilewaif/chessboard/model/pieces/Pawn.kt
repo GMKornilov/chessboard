@@ -27,7 +27,7 @@ class Pawn(isWhite: Boolean) : Piece(isWhite) {
         val res = mutableListOf<Move>()
 
         if (board.board[forwardRow][position.col] == null) {
-            val to = CellInfo(forwardRow, position.col)
+            val to = CellInfo(position.col, forwardRow)
             if (forwardRow == endRow) {
                 res.add(PromotionMove(this, null, position, to, Queen(isWhite)))
                 res.add(PromotionMove(this, null, position, to, Rook(isWhite)))
@@ -42,7 +42,7 @@ class Pawn(isWhite: Boolean) : Piece(isWhite) {
             // board.board[forwardRow][position.col + 1] is not null here, because then it wont pass
             // condition above
             val capturedPiece = board.board[forwardRow][position.col + 1]
-            val to = CellInfo(forwardRow, position.col + 1)
+            val to = CellInfo(position.col + 1, forwardRow)
             if (forwardRow == endRow) {
                 res.add(PromotionMove(this, capturedPiece, position, to, Queen(isWhite)))
                 res.add(PromotionMove(this, capturedPiece, position, to, Rook(isWhite)))
@@ -54,7 +54,7 @@ class Pawn(isWhite: Boolean) : Piece(isWhite) {
         }
         if (position.col != 0 && board.board[forwardRow][position.col - 1]?.isWhite != isWhite) {
             val capturedPiece = board.board[forwardRow][position.col - 1]
-            val to = CellInfo(forwardRow, position.col - 1)
+            val to = CellInfo(position.col - 1, forwardRow)
             if (forwardRow == endRow) {
                 res.add(PromotionMove(this, capturedPiece, position, to, Queen(isWhite)))
                 res.add(PromotionMove(this, capturedPiece, position, to, Rook(isWhite)))
@@ -72,7 +72,7 @@ class Pawn(isWhite: Boolean) : Piece(isWhite) {
                         EnPassantMove(this,
                                 enPassantPawn,
                                 position,
-                                CellInfo(forwardRow, position.col + 1),
+                                CellInfo(position.col + 1, forwardRow),
                                 board.enPassantCellInfo
                         )
                 )
@@ -82,7 +82,7 @@ class Pawn(isWhite: Boolean) : Piece(isWhite) {
                         EnPassantMove(this,
                                 enPassantPawn,
                                 position,
-                                CellInfo(forwardRow, position.col - 1),
+                                CellInfo(position.col - 1, forwardRow),
                                 board.enPassantCellInfo
                         )
                 )
@@ -90,7 +90,7 @@ class Pawn(isWhite: Boolean) : Piece(isWhite) {
         }
 
         if (position.row == startRow && board.board[position.row + deltaStart][position.col] == null) {
-            res.add(TransitionMove(this, position, CellInfo(position.row + deltaStart, position.col)))
+            res.add(TransitionMove(this, position, CellInfo(position.col, position.row + deltaStart)))
         }
         return res
     }

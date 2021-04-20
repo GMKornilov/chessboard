@@ -20,41 +20,41 @@ class Rook(isWhite: Boolean) : Piece(isWhite) {
             val piece = board.board[position.row][col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(RookCaptureMove(this, piece, position, CellInfo(position.row, col)))
+                    res.add(RookCaptureMove(this, piece, position, CellInfo(col, position.row)))
                 }
                 break
             }
-            res.add(RookTransitionMove(this, position, CellInfo(position.row, col)))
+            res.add(RookTransitionMove(this, position, CellInfo(col, position.row)))
         }
         for (col in position.col + 1 until Board.BOARD_SIZE) {
             val piece = board.board[position.row][col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(RookCaptureMove(this, piece, position, CellInfo(position.row, col)))
+                    res.add(RookCaptureMove(this, piece, position, CellInfo(col, position.row)))
                 }
                 break
             }
-            res.add(RookTransitionMove(this, position, CellInfo(position.row, col)))
+            res.add(RookTransitionMove(this, position, CellInfo(col, position.row)))
         }
         for (row in position.row downTo 0) {
             val piece = board.board[row][position.col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(RookCaptureMove(this, piece, position, CellInfo(row, position.col)))
+                    res.add(RookCaptureMove(this, piece, position, CellInfo(position.col, row)))
                 }
                 break
             }
-            res.add(RookTransitionMove(this, position, CellInfo(row, position.col)))
+            res.add(RookTransitionMove(this, position, CellInfo(position.col, row)))
         }
         for (row in position.row + 1..7) {
             val piece = board.board[row][position.col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(RookCaptureMove(this, piece, position, CellInfo(row, position.col)))
+                    res.add(RookCaptureMove(this, piece, position, CellInfo(position.col, row)))
                 }
                 break
             }
-            res.add(RookTransitionMove(this, position, CellInfo(row, position.col)))
+            res.add(RookTransitionMove(this, position, CellInfo(position.col, row)))
         }
         return res
     }

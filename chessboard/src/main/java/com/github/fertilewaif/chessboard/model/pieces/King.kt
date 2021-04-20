@@ -85,12 +85,12 @@ class King(isWhite: Boolean) : Piece(isWhite) {
         // (yeah, I don't like this spaghetti myself)
 
         if (canCastleLong && boardKing is King && boardLongRook is Rook && !board.isHit(position, isWhite)) {
-            if ((position.col - 1 downTo rookLongPos.col + 1).all { col -> board.board[position.row][col] == null && !board.isHit(CellInfo(position.row, col), isWhite) }) {
+            if ((position.col - 1 downTo rookLongPos.col + 1).all { col -> board.board[position.row][col] == null && !board.isHit(CellInfo(col, position.row), isWhite) }) {
                 res.add(CastleMove(this, boardLongRook, isWhite, false))
             }
         }
         if (canCastleShort && boardKing is King && boardShortRook is Rook && !board.isHit(position, isWhite)) {
-            if ((position.col + 1 until rookShortPos.col).all { col -> board.board[position.row][col] == null && !board.isHit(CellInfo(position.row, col), isWhite) }) {
+            if ((position.col + 1 until rookShortPos.col).all { col -> board.board[position.row][col] == null && !board.isHit(CellInfo(col, position.row), isWhite) }) {
                 res.add(CastleMove(this, boardShortRook, isWhite, true))
             }
         }

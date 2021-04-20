@@ -26,11 +26,11 @@ class Bishop(isWhite: Boolean) : Piece(isWhite) {
             val piece = board.board[row][col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CaptureMove(this, piece, position, CellInfo(row, col)))
+                    res.add(CaptureMove(this, piece, position, CellInfo(col, row)))
                 }
                 break
             }
-            res.add(TransitionMove(this, position, CellInfo(row, col)))
+            res.add(TransitionMove(this, position, CellInfo(col, row)))
         }
         for (deltaDownRight in 1..min(position.row, 7 - position.col)) {
             val row = position.row + deltaDownRight
@@ -38,11 +38,11 @@ class Bishop(isWhite: Boolean) : Piece(isWhite) {
             val piece = board.board[row][col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CaptureMove(this, piece, position, CellInfo(row, col)))
+                    res.add(CaptureMove(this, piece, position, CellInfo(col, row)))
                 }
                 break
             }
-            res.add(TransitionMove(this, position, CellInfo(row, col)))
+            res.add(TransitionMove(this, position, CellInfo(col, row)))
         }
         for (deltaUpLeft in 1..min(7 - position.row, position.col)) {
             val row = position.row + deltaUpLeft
@@ -50,11 +50,11 @@ class Bishop(isWhite: Boolean) : Piece(isWhite) {
             val piece = board.board[row][col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CaptureMove(this, piece, position, CellInfo(row, col)))
+                    res.add(CaptureMove(this, piece, position, CellInfo(col, row)))
                 }
                 break
             }
-            res.add(TransitionMove(this, position, CellInfo(row, col)))
+            res.add(TransitionMove(this, position, CellInfo(col, row)))
         }
         for (deltaDownLeft in 1..min(position.row, position.col)) {
             val row = position.row + deltaDownLeft
@@ -62,11 +62,11 @@ class Bishop(isWhite: Boolean) : Piece(isWhite) {
             val piece = board.board[row][col]
             if (piece != null) {
                 if (piece.isWhite != isWhite && piece !is King) {
-                    res.add(CaptureMove(this, piece, position, CellInfo(row, col)))
+                    res.add(CaptureMove(this, piece, position, CellInfo(col, row)))
                 }
                 break
             }
-            res.add(TransitionMove(this, position, CellInfo(row, col)))
+            res.add(TransitionMove(this, position, CellInfo(col, row)))
         }
         return res
     }
