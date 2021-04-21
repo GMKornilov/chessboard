@@ -16,7 +16,7 @@ class Board() {
      */
     val board = Array<Array<Piece?>>(BOARD_SIZE) { Array(BOARD_SIZE) { null } }
 
-    val whitePieces: List<Piece>
+    private val whitePieces: List<Piece>
         get() {
             val res = mutableListOf<Piece>()
             for (i in board.indices) {
@@ -30,7 +30,7 @@ class Board() {
             return res
         }
 
-    val blackPieces: List<Piece>
+    private val blackPieces: List<Piece>
         get() {
             val res = mutableListOf<Piece>()
             for (i in board.indices) {
