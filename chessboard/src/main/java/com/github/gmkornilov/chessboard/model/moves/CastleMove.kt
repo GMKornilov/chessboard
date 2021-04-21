@@ -82,12 +82,12 @@ class CastleMove(val king: King, val rook: Rook, val isWhite: Boolean, val isSho
     override fun getAnimationsInfo(isWhite: Boolean): List<AnimationInfo> {
         return listOf(
             AnimationInfo(
-                king.drawableRes,
+                king,
                 CellInfo.toAnimationIndexes(kingPosition, isWhite),
                 CellInfo.toAnimationIndexes(newKingPosition, isWhite),
             ),
             AnimationInfo(
-                rook.drawableRes,
+                rook,
                 CellInfo.toAnimationIndexes(rookPosition, isWhite),
                 CellInfo.toAnimationIndexes(newRookPosition, isWhite)
             ),

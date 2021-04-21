@@ -29,7 +29,7 @@ class PromotionMove(val pawn: Pawn, val killedPiece: Piece?, val from: CellInfo,
         val plusList = if (killedPiece != null) {
             listOf(
                 AnimationInfo(
-                    killedPiece.drawableRes,
+                    killedPiece,
                     CellInfo.toAnimationIndexes(to, isWhite),
                     null
                 )
@@ -39,17 +39,17 @@ class PromotionMove(val pawn: Pawn, val killedPiece: Piece?, val from: CellInfo,
         }
         return plusList + listOf(
             AnimationInfo(
-                pawn.drawableRes,
+                pawn,
                 CellInfo.toAnimationIndexes(from, isWhite),
                 CellInfo.toAnimationIndexes(to, isWhite)
             ),
             AnimationInfo(
-                pawn.drawableRes,
+                pawn,
                 CellInfo.toAnimationIndexes(to, isWhite),
                 null
             ),
             AnimationInfo(
-                promotedPiece.drawableRes,
+                promotedPiece,
                 null,
                 CellInfo.toAnimationIndexes(to, isWhite)
             )

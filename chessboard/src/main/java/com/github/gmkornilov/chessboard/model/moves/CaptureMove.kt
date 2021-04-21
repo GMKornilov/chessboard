@@ -26,12 +26,12 @@ open class CaptureMove(val capturePiece: Piece, val killedPiece: Piece, val from
     override fun getAnimationsInfo(isWhite: Boolean): List<AnimationInfo> {
         return listOf(
             AnimationInfo(
-                killedPiece.drawableRes,
+                killedPiece,
                 CellInfo.toAnimationIndexes(to, isWhite),
                 null
             ),
             AnimationInfo(
-                capturePiece.drawableRes,
+                capturePiece,
                 CellInfo.toAnimationIndexes(from, isWhite),
                 CellInfo.toAnimationIndexes(to, isWhite)
             )

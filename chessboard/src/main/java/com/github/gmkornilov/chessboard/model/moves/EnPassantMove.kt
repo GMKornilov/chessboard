@@ -26,12 +26,12 @@ class EnPassantMove(val capturePawn: Pawn, val killedPawn: Pawn, val from: CellI
     override fun getAnimationsInfo(isWhite: Boolean): List<AnimationInfo> {
         return listOf(
             AnimationInfo(
-                capturePawn.drawableRes,
+                capturePawn,
                 CellInfo.toAnimationIndexes(from, isWhite),
                 CellInfo.toAnimationIndexes(to, isWhite)
             ),
             AnimationInfo(
-                killedPawn.drawableRes,
+                killedPawn,
                 CellInfo.toAnimationIndexes(enPassantCell, isWhite),
                 null
             )

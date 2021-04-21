@@ -22,7 +22,7 @@ open class TransitionMove(val piece: Piece, val from: CellInfo, val to: CellInfo
     override fun getAnimationsInfo(isWhite: Boolean): List<AnimationInfo> {
         return listOf(
             AnimationInfo(
-                piece.drawableRes,
+                piece,
                 CellInfo.toAnimationIndexes(from, isWhite),
                 CellInfo.toAnimationIndexes(to, isWhite)
             )

@@ -11,5 +11,15 @@ interface Move {
 
     fun getAnimationsInfo(isWhite: Boolean): List<AnimationInfo>
 
+    fun getUndoAnimationsInfo(isWhite: Boolean): List<AnimationInfo> {
+        val animationInfos = getAnimationsInfo(isWhite)
+        val res = mutableListOf<AnimationInfo>()
+
+        for (animationInfo in animationInfos.reversed()) {
+            res.add(AnimationInfo(animationInfo.drawable, animationInfo.to, animationInfo.from))
+        }
+        return res
+    }
+
     fun getDisplayedCell(isWhite: Boolean): CellInfo
 }
