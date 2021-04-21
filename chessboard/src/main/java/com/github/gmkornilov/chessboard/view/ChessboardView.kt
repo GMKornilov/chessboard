@@ -77,10 +77,9 @@ class ChessboardView @JvmOverloads constructor(
         }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-
         val minSpec = min(widthMeasureSpec, heightMeasureSpec)
         setMeasuredDimension(minSpec, minSpec)
+        super.onMeasure(minSpec, minSpec)
     }
 
     override fun onDraw(canvas: Canvas?) {

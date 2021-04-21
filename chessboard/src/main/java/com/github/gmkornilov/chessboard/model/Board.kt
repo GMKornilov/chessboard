@@ -77,7 +77,8 @@ class Board() {
     }
 
     fun parseFEN(fen: String) {
-        // TODO: clear field
+        clear()
+
         val fieldPieces = fen.substring(0, fen.indexOf(' '))
         val state = fen.substring(fen.indexOf(' ') + 1)
 
@@ -109,6 +110,11 @@ class Board() {
                     }
                     piece.position = cellInfo
                     board[cellInfo.row][cellInfo.col] = piece
+                    if (isWhite) {
+                        whitePieces.add(piece)
+                    } else {
+                        blackPieces.add(piece)
+                    }
                     col++
                 }
             }
@@ -217,6 +223,28 @@ class Board() {
 
         res.append(turnNumber)
         return res.toString()
+    }
+
+    fun clear() {
+        for (i in board.indices) {
+            for (j in board[i].indices) {
+                board[i][j] = null
+            }
+        }
+        whitePieces.clear()
+        blackPieces.clear()
+
+        canWhiteCastleLong = false
+        canBlackCastleLong = false
+        canWhiteCastleShort = false
+        canBlackCastleShort = false
+
+        canEnPassant = false
+
+        isWhiteTurn = true
+
+        fiftyMovesRule = 0
+        turnNumber = 0
     }
 
     init {
