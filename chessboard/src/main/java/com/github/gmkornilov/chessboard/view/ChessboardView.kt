@@ -61,9 +61,9 @@ class ChessboardView @JvmOverloads constructor(
 
     private var isWhite = false
 
-    private val darkColor = Color.parseColor("#769656")
-    private val lightColor = Color.parseColor("#eeeed2")
-    private val moveColor = Color.parseColor("#B2C294")
+    private val darkColor = Color.parseColor("#fcaf68")
+    private val lightColor = Color.parseColor("#914f11")
+    private val moveColor = Color.parseColor("#91240A")
 
     private var sideX = 10f
     private var sideY = 10f
@@ -72,6 +72,7 @@ class ChessboardView @JvmOverloads constructor(
     var fen
         get() = board.toFen()
         set(value) {
+            availableMoves = null
             board.parseFEN(value)
             invalidate()
         }
@@ -147,8 +148,6 @@ class ChessboardView @JvmOverloads constructor(
             paint.style = Paint.Style.STROKE
             paint.strokeWidth = cellSize / 15
             radius = cellSize / 2.15f
-
-
             //paint.alpha = 200
         }
         val xCenter = sideX + cellInfo.col * cellSize + cellSize / 2
