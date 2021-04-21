@@ -1,3 +1,3 @@
 include ':chessboard'
-include ':app'
+//include ':app'
 rootProject.name = "ChessBoard"
