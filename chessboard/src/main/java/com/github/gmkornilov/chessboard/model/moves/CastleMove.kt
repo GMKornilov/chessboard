@@ -71,7 +71,7 @@ class CastleMove(val king: King, val rook: Rook, val isWhite: Boolean, val isSho
         board.removePiece(newRookPosition)
 
         board.addPiece(king, kingPosition)
-        board.addPiece(king, rookPosition)
+        board.addPiece(rook, rookPosition)
 
         king.position = kingPosition
         rook.position = rookPosition

@@ -117,16 +117,26 @@ class ChessboardView @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 val col = ((event.x - sideX) / cellSize).toInt()
                 val row = ((event.y - sideY) / cellSize).toInt()
-                val cellInfo = CellInfo.fromAnimationIndexes(row, col, isWhite)
-                Log.println(DEBUG, "chessboard", "${cellInfo.col} ${cellInfo.row}")
-                val piece = board.board[cellInfo.row][cellInfo.col]
-                if (piece != null) {
-                    availableMoves = piece.getLegalMoves(board)
-                    invalidate()
-                }
+                onCellCLicked(row, col)
             }
         }
         return true
+    }
+
+    private fun onCellCLicked(row: Int, col: Int) {
+        val moves = availableMoves
+        if (moves != null) {
+            val move = moves.find { it.getDisplayedCell(isWhite) == CellInfo(col, row) }
+            if (move != null) {
+                board.move(move, isWhite)
+            }
+            availableMoves = null
+            invalidate()
+        } else {
+            val (infoCol, infoRow) = CellInfo.fromAnimationIndexes(row, col, isWhite)
+            availableMoves = board.getMoves(infoRow, infoCol)
+            invalidate()
+        }
     }
 
     private fun drawMoves(canvas: Canvas) {
