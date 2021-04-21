@@ -191,15 +191,60 @@ class ChessboardView @JvmOverloads constructor(
     }
 
     private fun drawCell(canvas: Canvas, row: Int, col: Int) {
-        val color = if ((row + col) % 2 == 0) darkColor else lightColor
+        val color = if ((row + col) % 2 == 0) lightColor else darkColor
+
+        val (animCol, animRow) = CellInfo.toAnimationIndexes(CellInfo(col, row), isWhite)
+
         val paint = Paint()
         paint.color = color
         canvas.drawRect(
-            sideX + col * cellSize,
-            sideY + row * cellSize,
-            sideX + (col + 1) * cellSize,
-            sideY + (row + 1) * cellSize,
+            sideX + animCol * cellSize,
+            sideY + animRow * cellSize,
+            sideX + (animCol + 1) * cellSize,
+            sideY + (animRow + 1) * cellSize,
             paint
         )
+        if (animCol == 0) {
+            drawNumber(canvas,  row + 1, animRow, animCol)
+        }
+        if (animRow == 7) {
+            drawChar(canvas, 'a' + col, animRow, animCol)
+        }
+    }
+
+    private fun drawNumber(canvas: Canvas, num:Int, row: Int, col: Int) {
+        val paint = Paint()
+        paint.color = if ((col + row) % 2 == 0) {
+            lightColor
+        } else {
+            darkColor
+        }
+        paint.textAlign = Paint.Align.LEFT
+        paint.textSize = cellSize / 5f
+
+        val str = num.toString()
+
+        val x = sideX + cellSize * col
+        val y = sideY + cellSize * row + paint.textSize
+
+        canvas.drawText(str, x, y, paint)
+    }
+
+    private fun drawChar(canvas: Canvas, char: Char, row: Int, col: Int) {
+        val paint = Paint()
+        paint.color = if ((col + row) % 2 == 0) {
+            lightColor
+        } else {
+            darkColor
+        }
+        paint.textAlign = Paint.Align.RIGHT
+        paint.textSize = cellSize / 5f
+
+        val str = char.toString()
+
+        val x = sideX + cellSize * (col + 1) - cellSize / 15f
+        val y = sideY + cellSize * (row + 1) - cellSize / 15f
+
+        canvas.drawText(str, x, y, paint)
     }
 }
