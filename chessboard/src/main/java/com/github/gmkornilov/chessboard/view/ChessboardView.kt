@@ -52,27 +52,15 @@ class ChessboardView @JvmOverloads constructor(
         it to ResourcesCompat.getDrawable(resources, it, null)
     }.toMap()
 
-    init {
-        context.theme.obtainStyledAttributes(
-            attrs,
-            R.styleable.ChessboardView,
-            0, 0
-        ).apply {
-            try {
-                isWhite = getBoolean(R.styleable.ChessboardView_is_white, true)
-            } finally {
-                recycle()
-            }
-        }
-    }
-
     private var isWhite = false
+    private var allowOpponentMoves = false
 
     private val darkColor = Color.parseColor("#fcaf68")
+
     private val lightColor = Color.parseColor("#914f11")
     private val moveColor = Color.parseColor("#91240A")
-
     private var sideX = 10f
+
     private var sideY = 10f
     private var cellSize = 100f
 
@@ -83,6 +71,21 @@ class ChessboardView @JvmOverloads constructor(
             board.parseFEN(value)
             invalidate()
         }
+
+    init {
+        context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.ChessboardView,
+            0, 0
+        ).apply {
+            try {
+                isWhite = getBoolean(R.styleable.ChessboardView_is_white, true)
+                allowOpponentMoves = getBoolean(R.styleable.ChessboardView_allow_opponent_moves, true)
+            } finally {
+                recycle()
+            }
+        }
+    }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val minSpec = min(widthMeasureSpec, heightMeasureSpec)
@@ -131,6 +134,9 @@ class ChessboardView @JvmOverloads constructor(
     }
 
     private fun onCellCLicked(row: Int, col: Int) {
+        if (board.isWhiteTurn != isWhite && !allowOpponentMoves) {
+            return
+        }
         val moves = availableMoves
         if (moves != null) {
             val cellInfo = CellInfo(col, row)
