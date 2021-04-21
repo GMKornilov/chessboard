@@ -1,7 +1,9 @@
 package com.github.gmkornilov.chessboard.model
 
+import com.github.gmkornilov.chessboard.model.moves.*
 import com.github.gmkornilov.chessboard.model.pieces.*
 import java.lang.Exception
+import kotlin.math.abs
 
 class Board() {
     companion object {
@@ -12,11 +14,35 @@ class Board() {
      * cell-centered representation of the board
      * contains null if there is no figure on the cell
      */
-    //val board: MutableList<MutableList<Piece?>> = MutableList(BOARD_SIZE) { MutableList(BOARD_SIZE) { null } }
     val board = Array<Array<Piece?>>(BOARD_SIZE) { Array(BOARD_SIZE) { null } }
 
-    val whitePieces = mutableListOf<Piece>()
-    val blackPieces = mutableListOf<Piece>()
+    val whitePieces: List<Piece>
+        get() {
+            val res = mutableListOf<Piece>()
+            for (i in board.indices) {
+                for (j in board[i].indices) {
+                    val piece = board[i][j] ?: continue
+                    if (piece.isWhite) {
+                        res.add(piece)
+                    }
+                }
+            }
+            return res
+        }
+
+    val blackPieces: List<Piece>
+        get() {
+            val res = mutableListOf<Piece>()
+            for (i in board.indices) {
+                for (j in board[i].indices) {
+                    val piece = board[i][j] ?: continue
+                    if (!piece.isWhite) {
+                        res.add(piece)
+                    }
+                }
+            }
+            return res
+        }
 
     var canWhiteCastleShort = true
         internal set
@@ -46,6 +72,15 @@ class Board() {
     var blackKingPosition = CellInfo(4, 7)
         internal set
 
+    var moves = mutableListOf<Pair<Move, BoardExtraInfo>>()
+
+    fun getMoves(row: Int, col: Int): List<Move> {
+        val piece = board[row][col] ?: return listOf()
+        if (piece.isWhite != isWhiteTurn) {
+            return listOf()
+        }
+        return piece.getLegalMoves(this)
+    }
 
     fun addPiece(piece: Piece, to: CellInfo) {
         board[to.row][to.col] = piece
@@ -72,8 +107,61 @@ class Board() {
         return false
     }
 
-    fun move(from: CellInfo, to: CellInfo): Boolean {
-        TODO("implement me")
+    fun move(move: Move, isWhite: Boolean): List<AnimationInfo> {
+        val info = BoardExtraInfo(
+            Pair(canWhiteCastleShort, canWhiteCastleLong),
+            Pair(canBlackCastleShort, canBlackCastleLong),
+            canEnPassant,
+            enPassantCellInfo,
+            isWhiteTurn,
+            fiftyMovesRule,
+            turnNumber
+        )
+        moves.add(Pair(move, info))
+
+        move.move(this)
+
+        canEnPassant = false
+        if (move is TransitionMove && move.piece is Pawn && abs(move.from.row - move.to.row) == 2) {
+            canEnPassant = true
+            enPassantCellInfo = move.to
+        }
+
+        if (!isWhiteTurn) {
+            turnNumber++
+        }
+        isWhiteTurn = !isWhiteTurn
+
+        fiftyMovesRule += 1
+        if (move is CaptureMove || move is EnPassantMove || move is PromotionMove ||
+            (move is TransitionMove && move.piece is Pawn)) {
+            fiftyMovesRule = 0
+        }
+
+
+
+        return move.getAnimationsInfo(isWhite)
+    }
+
+    fun undo(isWhite: Boolean): List<AnimationInfo> {
+        val (move, info) = moves.removeLast()
+        move.undo(this)
+
+        canWhiteCastleShort = info.canWhiteCastle.first
+        canWhiteCastleLong = info.canWhiteCastle.second
+
+        canBlackCastleShort = info.canBlackCastle.first
+        canBlackCastleLong = info.canBlackCastle.second
+
+        canEnPassant = info.canEnPassant
+        enPassantCellInfo = info.enPassantCellInfo
+
+        isWhiteTurn = info.isWhiteTurn
+
+        fiftyMovesRule = info.fiftyMovesRule
+        turnNumber = info.turnNumber
+
+        return move.getUndoAnimationsInfo(isWhite)
     }
 
     fun parseFEN(fen: String) {
@@ -110,11 +198,6 @@ class Board() {
                     }
                     piece.position = cellInfo
                     board[cellInfo.row][cellInfo.col] = piece
-                    if (isWhite) {
-                        whitePieces.add(piece)
-                    } else {
-                        blackPieces.add(piece)
-                    }
                     col++
                 }
             }
@@ -231,8 +314,6 @@ class Board() {
                 board[i][j] = null
             }
         }
-        whitePieces.clear()
-        blackPieces.clear()
 
         canWhiteCastleLong = false
         canBlackCastleLong = false
@@ -245,6 +326,8 @@ class Board() {
 
         fiftyMovesRule = 0
         turnNumber = 0
+
+        moves = mutableListOf()
     }
 
     init {

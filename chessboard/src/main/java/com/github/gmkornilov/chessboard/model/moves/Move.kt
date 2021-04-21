@@ -16,7 +16,7 @@ interface Move {
         val res = mutableListOf<AnimationInfo>()
 
         for (animationInfo in animationInfos.reversed()) {
-            res.add(AnimationInfo(animationInfo.drawable, animationInfo.to, animationInfo.from))
+            res.add(AnimationInfo(animationInfo.piece, animationInfo.to, animationInfo.from))
         }
         return res
     }
