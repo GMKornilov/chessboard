@@ -70,7 +70,7 @@ class Rook(isWhite: Boolean) : Piece(isWhite) {
 
         var curRow = position.row + deltaRow
         var curCol = position.col + deltaCol
-        while (curRow != cellInfo.row && curCol != cellInfo.col) {
+        while (curRow != cellInfo.row || curCol != cellInfo.col) {
             if (board.board[curRow][curCol] != null) {
                 return false
             }
