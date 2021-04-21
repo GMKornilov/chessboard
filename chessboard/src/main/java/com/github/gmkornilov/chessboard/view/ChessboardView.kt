@@ -1,19 +1,14 @@
 package com.github.gmkornilov.chessboard.view
 
-import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Path
 import android.util.AttributeSet
-import android.util.Log
-import android.util.Log.DEBUG
 import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.View
-import android.widget.ArrayAdapter
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,7 +24,9 @@ import kotlin.math.min
 class ChessboardView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
-    private val board = Board()
+    private val board: Board by lazy {
+        Board(allowOpponentMoves)
+    }
 
     private var availableMoves: List<Move>? = null
 
@@ -80,7 +77,8 @@ class ChessboardView @JvmOverloads constructor(
         ).apply {
             try {
                 isWhite = getBoolean(R.styleable.ChessboardView_is_white, true)
-                allowOpponentMoves = getBoolean(R.styleable.ChessboardView_allow_opponent_moves, true)
+                allowOpponentMoves =
+                    getBoolean(R.styleable.ChessboardView_allow_opponent_moves, true)
             } finally {
                 recycle()
             }
@@ -134,9 +132,6 @@ class ChessboardView @JvmOverloads constructor(
     }
 
     private fun onCellCLicked(row: Int, col: Int) {
-        if (board.isWhiteTurn != isWhite && !allowOpponentMoves) {
-            return
-        }
         val moves = availableMoves
         if (moves != null) {
             val cellInfo = CellInfo(col, row)
@@ -155,7 +150,7 @@ class ChessboardView @JvmOverloads constructor(
             }
         } else {
             val (infoCol, infoRow) = CellInfo.fromAnimationIndexes(row, col, isWhite)
-            availableMoves = board.getMoves(infoRow, infoCol)
+            availableMoves = board.getMoves(infoRow, infoCol, isWhite)
             invalidate()
         }
     }
@@ -167,7 +162,7 @@ class ChessboardView @JvmOverloads constructor(
         val recyclerView = dialog.findViewById<RecyclerView>(R.id.piecesRecyclerView)
         var selectedMove: PromotionMove? = null
 
-        val clickCallback: (PromotionMove) -> Unit = {move ->
+        val clickCallback: (PromotionMove) -> Unit = { move ->
             dialog.dismiss()
             selectedMove = move
             board.move(move, isWhite)

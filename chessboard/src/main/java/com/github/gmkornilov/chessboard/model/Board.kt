@@ -5,7 +5,7 @@ import com.github.gmkornilov.chessboard.model.pieces.*
 import java.lang.Exception
 import kotlin.math.abs
 
-class Board() {
+class Board(val allowOpponentMoves: Boolean) {
     companion object {
         const val BOARD_SIZE = 8
     }
@@ -74,10 +74,13 @@ class Board() {
 
     var moves = mutableListOf<Pair<Move, BoardExtraInfo>>()
 
-    fun getMoves(row: Int, col: Int): List<Move> {
+    fun getMoves(row: Int, col: Int, isWhite: Boolean): List<Move> {
+        if (isWhiteTurn != isWhite && !allowOpponentMoves) {
+            return emptyList()
+        }
         val piece = board[row][col] ?: return listOf()
         if (piece.isWhite != isWhiteTurn) {
-            return listOf()
+            return emptyList()
         }
         return piece.getLegalMoves(this)
     }
