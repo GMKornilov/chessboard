@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="err_invalid_piece">Invalid piece</string>
+    <string name="no_piece_message">No piece provided</string>
 </resources>

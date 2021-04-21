@@ -1,5 +1,7 @@
 package com.github.gmkornilov.chessboard.view
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -11,12 +13,17 @@ import android.util.Log.DEBUG
 import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.View
+import android.widget.ArrayAdapter
 import androidx.core.content.res.ResourcesCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.gmkornilov.chessboard.R
 import com.github.gmkornilov.chessboard.model.Board
 import com.github.gmkornilov.chessboard.model.CellInfo
 import com.github.gmkornilov.chessboard.model.moves.Move
+import com.github.gmkornilov.chessboard.model.moves.PromotionMove
 import com.github.gmkornilov.chessboard.model.pieces.Piece
+import com.github.gmkornilov.chessboard.view.piece_pick.PiecePickAdapter
 import kotlin.math.min
 
 class ChessboardView @JvmOverloads constructor(
@@ -126,17 +133,54 @@ class ChessboardView @JvmOverloads constructor(
     private fun onCellCLicked(row: Int, col: Int) {
         val moves = availableMoves
         if (moves != null) {
-            val move = moves.find { it.getDisplayedCell(isWhite) == CellInfo(col, row) }
-            if (move != null) {
-                board.move(move, isWhite)
+            val cellInfo = CellInfo(col, row)
+            val promotionMoves = moves.filter {
+                it.getDisplayedCell(isWhite) == cellInfo && it is PromotionMove
+            }.map { it as PromotionMove }
+            if (promotionMoves.isNotEmpty()) {
+                choosePromotionPiece(promotionMoves)
+            } else {
+                val move = moves.find { it.getDisplayedCell(isWhite) == CellInfo(col, row) }
+                if (move != null) {
+                    board.move(move, isWhite)
+                }
+                availableMoves = null
+                invalidate()
             }
-            availableMoves = null
-            invalidate()
         } else {
             val (infoCol, infoRow) = CellInfo.fromAnimationIndexes(row, col, isWhite)
             availableMoves = board.getMoves(infoRow, infoCol)
             invalidate()
         }
+    }
+
+    private fun choosePromotionPiece(pieces: List<PromotionMove>) {
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.dialog_piece_pick)
+
+        val recyclerView = dialog.findViewById<RecyclerView>(R.id.piecesRecyclerView)
+        var selectedMove: PromotionMove? = null
+
+        val clickCallback: (PromotionMove) -> Unit = {move ->
+            dialog.dismiss()
+            selectedMove = move
+            board.move(move, isWhite)
+            availableMoves = null
+            invalidate()
+        }
+
+        recyclerView.adapter = PiecePickAdapter(pieces, clickCallback)
+        recyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+
+        dialog.setOnDismissListener {
+            if (selectedMove == null) {
+                availableMoves = null
+                invalidate()
+            }
+        }
+
+        dialog.show()
     }
 
     private fun drawMoves(canvas: Canvas) {
@@ -215,14 +259,14 @@ class ChessboardView @JvmOverloads constructor(
             paint
         )
         if (animCol == 0) {
-            drawNumber(canvas,  row + 1, animRow, animCol)
+            drawNumber(canvas, row + 1, animRow, animCol)
         }
         if (animRow == 7) {
             drawChar(canvas, 'a' + col, animRow, animCol)
         }
     }
 
-    private fun drawNumber(canvas: Canvas, num:Int, row: Int, col: Int) {
+    private fun drawNumber(canvas: Canvas, num: Int, row: Int, col: Int) {
         val paint = Paint()
         paint.color = if ((col + row) % 2 == 0) {
             lightColor
