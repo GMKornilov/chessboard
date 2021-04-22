@@ -78,11 +78,44 @@ class Board(val allowOpponentMoves: Boolean) {
         if (isWhiteTurn != isWhite && !allowOpponentMoves) {
             return emptyList()
         }
-        val piece = board[row][col] ?: return listOf()
+        val piece = board[row][col] ?: return emptyList()
         if (piece.isWhite != isWhiteTurn) {
             return emptyList()
         }
         return piece.getLegalMoves(this)
+    }
+
+    fun getExtraNotation(piece: Piece, cellInfo: CellInfo): String {
+        val hittingPieces = mutableListOf<Piece>()
+        for (row in board) {
+            for (boardPiece in row) {
+                if (boardPiece != null && piece.toString() == boardPiece.toString()
+                    && boardPiece.canHit(cellInfo, this)
+                ) {
+                    hittingPieces.add(boardPiece)
+                }
+            }
+        }
+        if (hittingPieces.isNotEmpty()) {
+            return ""
+        }
+        var sameRow = false
+        var sameCol = false
+        for (hittingPiece in hittingPieces) {
+            if (hittingPiece.position.row == piece.position.row) {
+                sameRow = true
+            } else if (hittingPiece.position.col == piece.position.col){
+                sameCol = true
+            }
+        }
+
+        if (!sameRow) {
+            return (piece.position.row + 1).toString()
+        }
+        if (!sameCol) {
+            return ('a' + piece.position.col).toString()
+        }
+        return piece.position.notation
     }
 
     fun addPiece(piece: Piece, to: CellInfo) {
@@ -137,7 +170,8 @@ class Board(val allowOpponentMoves: Boolean) {
 
         fiftyMovesRule += 1
         if (move is CaptureMove || move is EnPassantMove || move is PromotionMove ||
-            (move is TransitionMove && move.piece is Pawn)) {
+            (move is TransitionMove && move.piece is Pawn)
+        ) {
             fiftyMovesRule = 0
         }
 

@@ -22,4 +22,6 @@ interface Move {
     }
 
     fun getDisplayedCell(isWhite: Boolean): CellInfo
+
+    fun getMoveNotation(board: Board): String
 }

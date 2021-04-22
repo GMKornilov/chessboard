@@ -5,6 +5,7 @@ import com.github.gmkornilov.chessboard.model.Board
 import com.github.gmkornilov.chessboard.model.CellInfo
 import com.github.gmkornilov.chessboard.model.pieces.Pawn
 import com.github.gmkornilov.chessboard.model.pieces.Piece
+import java.util.*
 
 class PromotionMove(val pawn: Pawn, val killedPiece: Piece?, val from: CellInfo, val to: CellInfo, val promotedPiece: Piece) : Move {
     override fun move(board: Board) {
@@ -35,7 +36,7 @@ class PromotionMove(val pawn: Pawn, val killedPiece: Piece?, val from: CellInfo,
                 )
             )
         } else {
-            listOf()
+            emptyList()
         }
         return plusList + listOf(
             AnimationInfo(
@@ -58,5 +59,14 @@ class PromotionMove(val pawn: Pawn, val killedPiece: Piece?, val from: CellInfo,
 
     override fun getDisplayedCell(isWhite: Boolean): CellInfo {
         return CellInfo.toAnimationIndexes(to, isWhite)
+    }
+
+    override fun getMoveNotation(board: Board): String {
+        var res = ""
+        if (killedPiece != null) {
+            res += 'a' + from.col + "x"
+        }
+        res += to.notation + "=" + promotedPiece.toString().toUpperCase(Locale.ROOT)
+        return res
     }
 }

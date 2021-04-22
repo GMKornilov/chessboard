@@ -41,4 +41,8 @@ class EnPassantMove(val capturePawn: Pawn, val killedPawn: Pawn, val from: CellI
     override fun getDisplayedCell(isWhite: Boolean): CellInfo {
         return CellInfo.toAnimationIndexes(to, isWhite)
     }
+
+    override fun getMoveNotation(board: Board): String {
+        return ('a' + from.col) + "x" + to.notation
+    }
 }

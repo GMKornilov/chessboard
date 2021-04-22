@@ -98,4 +98,8 @@ class CastleMove(val king: King, val rook: Rook, val isWhite: Boolean, val isSho
         return CellInfo.toAnimationIndexes(newKingPosition, isWhite)
     }
 
+    override fun getMoveNotation(board: Board): String {
+        return if (isShort) "O-O" else "O-O-O"
+    }
+
 }
