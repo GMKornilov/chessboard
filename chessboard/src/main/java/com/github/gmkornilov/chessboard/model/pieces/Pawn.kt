@@ -39,8 +39,6 @@ class Pawn(isWhite: Boolean) : Piece(isWhite) {
             }
         }
         if (position.col != Board.BOARD_SIZE - 1 && board.board[forwardRow][position.col + 1]?.isWhite == !isWhite) {
-            // board.board[forwardRow][position.col + 1] is not null here, because then it wont pass
-            // condition above
             val capturedPiece = board.board[forwardRow][position.col + 1]
             val to = CellInfo(position.col + 1, forwardRow)
             if (forwardRow == endRow) {
@@ -67,7 +65,7 @@ class Pawn(isWhite: Boolean) : Piece(isWhite) {
 
         if (board.canEnPassant) {
             val enPassantPawn = board.board[board.enPassantCellInfo.row][board.enPassantCellInfo.col] as Pawn
-            if (board.enPassantCellInfo.col - 1 == position.col) {
+            if (board.enPassantCellInfo.col - 1 == position.col && board.enPassantCellInfo.row == position.row) {
                 res.add(
                         EnPassantMove(this,
                                 enPassantPawn,
@@ -77,7 +75,7 @@ class Pawn(isWhite: Boolean) : Piece(isWhite) {
                         )
                 )
             }
-            if (board.enPassantCellInfo.col + 1 == position.col) {
+            if (board.enPassantCellInfo.col + 1 == position.col && board.enPassantCellInfo.row == position.row) {
                 res.add(
                         EnPassantMove(this,
                                 enPassantPawn,
