@@ -171,10 +171,11 @@ class ChessboardView @JvmOverloads constructor(
                     onPieceMoved(row, col)
                     clickedOnce = false
                 } else {
+                    val moves = availableMoves
                     if (clickedOnce) {
                         clickedOnce = false
                         onCellCLicked(row, col)
-                    } else {
+                    } else if (moves != null && moves.isNotEmpty()) {
                         clickedOnce = true
                     }
                 }

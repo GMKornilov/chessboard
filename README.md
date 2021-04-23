@@ -36,6 +36,10 @@ dependencies {
         app:allow_opponent_moves="true" />
 ```
 
+## XML parameters
+1. is_white - is user playing as white or black
+2. allow_opponnt_moves - defines if user can play with himself 
+
 ## Provided types
 1. ```ChessboardView``` - view itself
 2. ```ChessboardView.OnMoveListener``` - interface for listening to game moves. Has only one method: ```onMove(move: String): Unit```(```move``` is provided as Short Algebraic Notation(SAN)).
