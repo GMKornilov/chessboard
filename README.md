@@ -37,8 +37,8 @@ dependencies {
 ```
 
 ## XML parameters
-1. is_white - is user playing as white or black
-2. allow_opponnt_moves - defines if user can play with himself 
+1. ```is_white``` - is user playing as white or black
+2. ```allow_opponent_moves``` - defines if user can play with himself 
 
 ## Provided types
 1. ```ChessboardView``` - view itself
