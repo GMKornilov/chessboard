@@ -206,7 +206,9 @@ class ChessboardView @JvmOverloads constructor(
         } else {
             val move = moves.find { it.getDisplayedCell(isWhite) == CellInfo(toCol, toRow) }
             if (move != null) {
+                val notation = move.getMoveNotation(board)
                 board.move(move, isWhite)
+                onMoveListener?.onMove(notation)
             }
             availableMoves = null
             invalidate()
@@ -223,7 +225,9 @@ class ChessboardView @JvmOverloads constructor(
         val clickCallback: (PromotionMove) -> Unit = { move ->
             dialog.dismiss()
             selectedMove = move
+            val notation = move.getMoveNotation(board)
             board.move(move, isWhite)
+            onMoveListener?.onMove(notation)
             availableMoves = null
             invalidate()
         }
