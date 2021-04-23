@@ -90,6 +90,7 @@ class Board(val allowOpponentMoves: Boolean) {
             for (boardPiece in row) {
                 if (boardPiece != null && piece.toString() == boardPiece.toString()
                     && boardPiece.getLegalMoveTo(cellInfo, this) != null
+                    && boardPiece != piece
                 ) {
                     hittingPieces.add(boardPiece)
                 }
@@ -108,11 +109,11 @@ class Board(val allowOpponentMoves: Boolean) {
             }
         }
 
-        if (!sameRow) {
-            return (piece.position.row + 1).toString()
-        }
         if (!sameCol) {
             return ('a' + piece.position.col).toString()
+        }
+        if (!sameRow) {
+            return (piece.position.row + 1).toString()
         }
         return piece.position.notation
     }
