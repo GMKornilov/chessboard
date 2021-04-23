@@ -7,7 +7,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
-import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
@@ -25,9 +24,15 @@ import kotlin.math.min
 class ChessboardView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
+    interface OnMoveListener {
+        fun onMove(move: String)
+    }
+
     private val board: Board by lazy {
         Board(allowOpponentMoves)
     }
+
+    private var onMoveListener: OnMoveListener? = null
 
     private var availableMoves: List<Move>? = null
 
@@ -66,7 +71,25 @@ class ChessboardView @JvmOverloads constructor(
 
     private var sideX = 10f
     private var sideY = 10f
+
     private var cellSize = 100f
+
+    private val captureRadius: Float
+        get() = cellSize / 2.15f
+    private val captureStrokeWidth: Float
+        get() = cellSize / 15
+
+    private val moveRadius: Float
+        get() = cellSize / 6
+
+    private val normalPieceSize: Float
+        get() = 6 * cellSize / 7
+    private val bigPieceSize: Float
+        get() = 1.5f * cellSize
+
+    private val textSize: Float
+        get() = cellSize / 5
+
 
     var fen
         get() = board.toFen()
@@ -90,6 +113,10 @@ class ChessboardView @JvmOverloads constructor(
                 recycle()
             }
         }
+    }
+
+    fun setOnMoveListener(listener: OnMoveListener) {
+        onMoveListener = listener
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -123,7 +150,6 @@ class ChessboardView @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 val (infoCol, infoRow) = CellInfo.fromAnimationIndexes(row, col, isWhite)
                 draggedPiece = board.board[infoRow][infoCol]
-                // TODO: available moves bug here
                 if (!clickedOnce) {
                     availableMoves = board.getMoves(infoRow, infoCol, isWhite)
                 }
@@ -230,12 +256,11 @@ class ChessboardView @JvmOverloads constructor(
 
         val cellInfo = move.getDisplayedCell(isWhite)
         val boardCellInfo = CellInfo.fromAnimationIndexes(cellInfo.row, cellInfo.col, isWhite)
-        var radius = cellSize / 6
+        var radius = moveRadius
         if (board.board[boardCellInfo.row][boardCellInfo.col] != null) {
             paint.style = Paint.Style.STROKE
-            paint.strokeWidth = cellSize / 15
-            radius = cellSize / 2.15f
-            //paint.alpha = 200
+            paint.strokeWidth = captureStrokeWidth
+            radius = captureRadius
         }
         val xCenter = sideX + cellInfo.col * cellSize + cellSize / 2
         val yCenter = sideY + cellInfo.row * cellSize + cellSize / 2
@@ -258,17 +283,15 @@ class ChessboardView @JvmOverloads constructor(
 
     private fun drawPiece(canvas: Canvas, piece: Piece) {
         val drawPosition = CellInfo.toAnimationIndexes(piece.position, isWhite)
-        val sz = 6 * cellSize / 7
-        val left = sideX + drawPosition.col * cellSize + (cellSize - sz) / 2
-        val top = sideY + drawPosition.row * cellSize + (cellSize - sz) / 2
-        drawPieceAt(canvas, piece, left, top, sz)
+        val left = sideX + drawPosition.col * cellSize + (cellSize - normalPieceSize) / 2
+        val top = sideY + drawPosition.row * cellSize + (cellSize - normalPieceSize) / 2
+        drawPieceAt(canvas, piece, left, top, normalPieceSize)
     }
 
     private fun drawDraggedPiece(canvas: Canvas) {
         val piece = draggedPiece
         piece ?: return
-        val sz = 1.5f * cellSize
-        drawPieceAt(canvas, piece, dragX - sz / 2, dragY - sz / 2, sz)
+        drawPieceAt(canvas, piece, dragX - bigPieceSize / 2, dragY - bigPieceSize / 2, bigPieceSize)
     }
 
     private fun drawPieceAt(canvas: Canvas, piece: Piece, x: Float, y: Float, sz: Float) {
@@ -320,7 +343,7 @@ class ChessboardView @JvmOverloads constructor(
             darkColor
         }
         paint.textAlign = Paint.Align.LEFT
-        paint.textSize = cellSize / 5f
+        paint.textSize = textSize
 
         val str = num.toString()
 
@@ -338,7 +361,7 @@ class ChessboardView @JvmOverloads constructor(
             darkColor
         }
         paint.textAlign = Paint.Align.RIGHT
-        paint.textSize = cellSize / 5f
+        paint.textSize = textSize
 
         val str = char.toString()
 
