@@ -62,8 +62,6 @@ class CastleMove(val king: King, val rook: Rook, val isWhite: Boolean, val isSho
 
         king.position = newKingPosition
         rook.position = newRookPosition
-
-        // TODO: change board info about castling
     }
 
     override fun undo(board: Board) {
@@ -75,8 +73,6 @@ class CastleMove(val king: King, val rook: Rook, val isWhite: Boolean, val isSho
 
         king.position = kingPosition
         rook.position = rookPosition
-
-        // TODO: restore board info about castling
     }
 
     override fun getAnimationsInfo(isWhite: Boolean): List<AnimationInfo> {
@@ -94,8 +90,8 @@ class CastleMove(val king: King, val rook: Rook, val isWhite: Boolean, val isSho
         )
     }
 
-    override fun getDisplayedCell(isWhite: Boolean): CellInfo {
-        return CellInfo.toAnimationIndexes(newKingPosition, isWhite)
+    override fun getMoveCell(): CellInfo {
+        return newKingPosition
     }
 
     override fun getMoveNotation(board: Board): String {

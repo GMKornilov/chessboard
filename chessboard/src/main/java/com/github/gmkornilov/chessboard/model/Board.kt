@@ -2,7 +2,6 @@ package com.github.gmkornilov.chessboard.model
 
 import com.github.gmkornilov.chessboard.model.moves.*
 import com.github.gmkornilov.chessboard.model.pieces.*
-import java.lang.Exception
 import kotlin.math.abs
 
 class Board(val allowOpponentMoves: Boolean) {
@@ -90,7 +89,7 @@ class Board(val allowOpponentMoves: Boolean) {
         for (row in board) {
             for (boardPiece in row) {
                 if (boardPiece != null && piece.toString() == boardPiece.toString()
-                    && boardPiece.canHit(cellInfo, this)
+                    && boardPiece.getLegalMoveTo(cellInfo, this) != null
                 ) {
                     hittingPieces.add(boardPiece)
                 }

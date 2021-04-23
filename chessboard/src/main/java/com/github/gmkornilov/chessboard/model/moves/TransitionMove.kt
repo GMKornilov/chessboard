@@ -31,8 +31,8 @@ open class TransitionMove(val piece: Piece, val from: CellInfo, val to: CellInfo
         )
     }
 
-    override fun getDisplayedCell(isWhite: Boolean): CellInfo {
-        return CellInfo.toAnimationIndexes(to, isWhite)
+    override fun getMoveCell(): CellInfo {
+        return to
     }
 
     override fun getMoveNotation(board: Board): String {

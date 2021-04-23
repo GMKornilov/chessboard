@@ -40,8 +40,8 @@ open class CaptureMove(val capturePiece: Piece, val killedPiece: Piece, val from
         )
     }
 
-    override fun getDisplayedCell(isWhite: Boolean): CellInfo {
-        return CellInfo.toAnimationIndexes(to, isWhite)
+    override fun getMoveCell(): CellInfo {
+        return to
     }
 
     override fun getMoveNotation(board: Board): String {
