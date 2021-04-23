@@ -19,4 +19,7 @@ data class CellInfo(var col: Int, var row: Int) {
             }
         }
     }
+
+    val notation: String
+        get() = ('a' + col) + (row + 1).toString()
 }

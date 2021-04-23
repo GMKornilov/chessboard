@@ -3,7 +3,9 @@ package com.github.gmkornilov.chessboard.model.moves
 import com.github.gmkornilov.chessboard.model.AnimationInfo
 import com.github.gmkornilov.chessboard.model.Board
 import com.github.gmkornilov.chessboard.model.CellInfo
+import com.github.gmkornilov.chessboard.model.pieces.Pawn
 import com.github.gmkornilov.chessboard.model.pieces.Piece
+import java.util.*
 
 open class CaptureMove(val capturePiece: Piece, val killedPiece: Piece, val from: CellInfo, val to: CellInfo) : Move {
     override fun move(board: Board) {
@@ -38,8 +40,20 @@ open class CaptureMove(val capturePiece: Piece, val killedPiece: Piece, val from
         )
     }
 
-    override fun getDisplayedCell(isWhite: Boolean): CellInfo {
-        return CellInfo.toAnimationIndexes(to, isWhite)
+    override fun getMoveCell(): CellInfo {
+        return to
+    }
+
+    override fun getMoveNotation(board: Board): String {
+        var res = ""
+        if (capturePiece !is Pawn) {
+            res += capturePiece.toString().toUpperCase(Locale.ROOT)
+            res += board.getExtraNotation(capturePiece, to)
+        } else {
+            res += ('a' + capturePiece.position.col).toString()
+        }
+        res += "x" + to.notation
+        return res
     }
 
 }

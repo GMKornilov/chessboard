@@ -21,5 +21,11 @@ interface Move {
         return res
     }
 
-    fun getDisplayedCell(isWhite: Boolean): CellInfo
+    fun getMoveCell(): CellInfo
+
+    fun getDisplayedCell(isWhite: Boolean): CellInfo {
+        return CellInfo.toAnimationIndexes(getMoveCell(), isWhite)
+    }
+
+    fun getMoveNotation(board: Board): String
 }

@@ -2,10 +2,9 @@ package com.github.gmkornilov.chessboard.model
 
 import com.github.gmkornilov.chessboard.model.moves.*
 import com.github.gmkornilov.chessboard.model.pieces.*
-import java.lang.Exception
 import kotlin.math.abs
 
-class Board() {
+class Board(val allowOpponentMoves: Boolean) {
     companion object {
         const val BOARD_SIZE = 8
     }
@@ -16,7 +15,7 @@ class Board() {
      */
     val board = Array<Array<Piece?>>(BOARD_SIZE) { Array(BOARD_SIZE) { null } }
 
-    val whitePieces: List<Piece>
+    private val whitePieces: List<Piece>
         get() {
             val res = mutableListOf<Piece>()
             for (i in board.indices) {
@@ -30,7 +29,7 @@ class Board() {
             return res
         }
 
-    val blackPieces: List<Piece>
+    private val blackPieces: List<Piece>
         get() {
             val res = mutableListOf<Piece>()
             for (i in board.indices) {
@@ -74,12 +73,49 @@ class Board() {
 
     var moves = mutableListOf<Pair<Move, BoardExtraInfo>>()
 
-    fun getMoves(row: Int, col: Int): List<Move> {
-        val piece = board[row][col] ?: return listOf()
+    fun getMoves(row: Int, col: Int, isWhite: Boolean): List<Move> {
+        if (isWhiteTurn != isWhite && !allowOpponentMoves) {
+            return emptyList()
+        }
+        val piece = board[row][col] ?: return emptyList()
         if (piece.isWhite != isWhiteTurn) {
-            return listOf()
+            return emptyList()
         }
         return piece.getLegalMoves(this)
+    }
+
+    fun getExtraNotation(piece: Piece, cellInfo: CellInfo): String {
+        val hittingPieces = mutableListOf<Piece>()
+        for (row in board) {
+            for (boardPiece in row) {
+                if (boardPiece != null && piece.toString() == boardPiece.toString()
+                    && boardPiece.getLegalMoveTo(cellInfo, this) != null
+                    && boardPiece != piece
+                ) {
+                    hittingPieces.add(boardPiece)
+                }
+            }
+        }
+        if (hittingPieces.isEmpty()) {
+            return ""
+        }
+        var sameRow = false
+        var sameCol = false
+        for (hittingPiece in hittingPieces) {
+            if (hittingPiece.position.row == piece.position.row) {
+                sameRow = true
+            } else if (hittingPiece.position.col == piece.position.col){
+                sameCol = true
+            }
+        }
+
+        if (!sameCol) {
+            return ('a' + piece.position.col).toString()
+        }
+        if (!sameRow) {
+            return (piece.position.row + 1).toString()
+        }
+        return piece.position.notation
     }
 
     fun addPiece(piece: Piece, to: CellInfo) {
@@ -134,7 +170,8 @@ class Board() {
 
         fiftyMovesRule += 1
         if (move is CaptureMove || move is EnPassantMove || move is PromotionMove ||
-            (move is TransitionMove && move.piece is Pawn)) {
+            (move is TransitionMove && move.piece is Pawn)
+        ) {
             fiftyMovesRule = 0
         }
 

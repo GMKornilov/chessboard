@@ -40,4 +40,9 @@ abstract class Piece(val isWhite: Boolean) {
      * checks if piece can hit given cell
      */
     abstract fun canHit(cellInfo: CellInfo, board: Board): Boolean
+
+    fun getLegalMoveTo(cellInfo: CellInfo, board: Board): Move? {
+        val legalMoves = getLegalMoves(board)
+        return legalMoves.find { it -> it.getMoveCell() == cellInfo }
+    }
 }

@@ -2,5 +2,6 @@
 <resources>
     <declare-styleable name="ChessboardView">
         <attr name="is_white" format="boolean"/>
+        <attr name="allow_opponent_moves" format="boolean"/>
     </declare-styleable>
 </resources>
