@@ -37,7 +37,7 @@ open class TransitionMove(val piece: Piece, val from: CellInfo, val to: CellInfo
 
     override fun getMoveNotation(board: Board): String {
         if (piece !is Pawn) {
-            return piece.toString().toUpperCase(Locale.ROOT) + board.getExtraNotation(piece, to)
+            return piece.toString().toUpperCase(Locale.ROOT) + board.getExtraNotation(piece, to) + to.notation
         } else {
             return to.notation
         }

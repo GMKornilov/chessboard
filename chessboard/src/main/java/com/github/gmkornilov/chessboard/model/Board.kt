@@ -95,7 +95,7 @@ class Board(val allowOpponentMoves: Boolean) {
                 }
             }
         }
-        if (hittingPieces.isNotEmpty()) {
+        if (hittingPieces.isEmpty()) {
             return ""
         }
         var sameRow = false

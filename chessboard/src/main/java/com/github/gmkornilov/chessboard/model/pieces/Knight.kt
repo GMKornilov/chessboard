@@ -54,9 +54,9 @@ class Knight(isWhite: Boolean) : Piece(isWhite) {
 
     override fun toString(): String {
         return if(isWhite) {
-            "K"
+            "N"
         } else {
-            "k"
+            "n"
         }
     }
 }
