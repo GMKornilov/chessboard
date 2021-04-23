@@ -91,14 +91,6 @@ class ChessboardView @JvmOverloads constructor(
         get() = cellSize / 5
 
 
-    var fen
-        get() = board.toFen()
-        set(value) {
-            availableMoves = null
-            board.parseFEN(value)
-            invalidate()
-        }
-
     init {
         context.theme.obtainStyledAttributes(
             attrs,
@@ -117,6 +109,16 @@ class ChessboardView @JvmOverloads constructor(
 
     fun setOnMoveListener(listener: OnMoveListener) {
         onMoveListener = listener
+    }
+
+    fun getFEN(): String {
+        return board.toFen()
+    }
+
+    fun setFEN(fen: String) {
+        availableMoves = null
+        board.parseFEN(fen)
+        invalidate()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
