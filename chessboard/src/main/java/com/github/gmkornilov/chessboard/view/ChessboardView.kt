@@ -146,6 +146,9 @@ class ChessboardView @JvmOverloads constructor(
     }
 
     fun undo() {
+        if (lastMove == null) {
+            return
+        }
         board.undo(isWhite)
         onFenChangedListener?.onFenChanged(getFEN())
         invalidate()

@@ -206,6 +206,9 @@ class Board(val allowOpponentMoves: Boolean) {
     }
 
     fun undo(isWhite: Boolean): List<AnimationInfo> {
+        if (moves.isEmpty()) {
+            return emptyList()
+        }
         val (move, info) = moves.removeLast()
         move.undo(this)
 
