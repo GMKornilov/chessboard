@@ -7,7 +7,7 @@ import com.github.gmkornilov.chessboard.model.pieces.Pawn
 import com.github.gmkornilov.chessboard.model.pieces.Piece
 import java.util.*
 
-class PromotionMove(val pawn: Pawn, val killedPiece: Piece?, val from: CellInfo, val to: CellInfo, val promotedPiece: Piece) : Move {
+internal class PromotionMove(val pawn: Pawn, val killedPiece: Piece?, val from: CellInfo, val to: CellInfo, val promotedPiece: Piece) : Move {
     override fun move(board: Board) {
         board.removePiece(from)
         if (killedPiece != null) {

@@ -6,7 +6,7 @@ import com.github.gmkornilov.chessboard.model.CellInfo
 import com.github.gmkornilov.chessboard.model.moves.*
 import kotlin.math.abs
 
-class Pawn(isWhite: Boolean) : Piece(isWhite) {
+internal class Pawn(isWhite: Boolean) : Piece(isWhite) {
     override var drawableRes = if (isWhite) {
         R.drawable.ic_wp
     } else {

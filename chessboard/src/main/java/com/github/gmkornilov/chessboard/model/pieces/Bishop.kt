@@ -10,7 +10,7 @@ import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.sign
 
-class Bishop(isWhite: Boolean) : Piece(isWhite) {
+internal class Bishop(isWhite: Boolean) : Piece(isWhite) {
     override var drawableRes = if (isWhite) {
         R.drawable.ic_wb
     } else {

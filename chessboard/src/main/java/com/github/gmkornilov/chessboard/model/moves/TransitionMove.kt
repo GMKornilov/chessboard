@@ -8,7 +8,7 @@ import com.github.gmkornilov.chessboard.model.pieces.Pawn
 import com.github.gmkornilov.chessboard.model.pieces.Piece
 import java.util.*
 
-open class TransitionMove(val piece: Piece, val from: CellInfo, val to: CellInfo) : Move {
+internal open class TransitionMove(val piece: Piece, val from: CellInfo, val to: CellInfo) : Move {
     override fun move(board: Board) {
         board.removePiece(from)
         board.addPiece(piece, to)

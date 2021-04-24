@@ -4,7 +4,7 @@ import com.github.gmkornilov.chessboard.model.moves.*
 import com.github.gmkornilov.chessboard.model.pieces.*
 import kotlin.math.abs
 
-class Board(val allowOpponentMoves: Boolean) {
+internal class Board(val allowOpponentMoves: Boolean) {
     companion object {
         const val BOARD_SIZE = 8
     }

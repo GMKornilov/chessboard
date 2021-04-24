@@ -5,7 +5,7 @@ import com.github.gmkornilov.chessboard.model.CellInfo
 import com.github.gmkornilov.chessboard.model.pieces.King
 import com.github.gmkornilov.chessboard.model.pieces.Piece
 
-class KingCaptureMove(capturePiece: King, killedPiece: Piece, from: CellInfo, to: CellInfo) : CaptureMove(capturePiece, killedPiece, from, to) {
+internal class KingCaptureMove(capturePiece: King, killedPiece: Piece, from: CellInfo, to: CellInfo) : CaptureMove(capturePiece, killedPiece, from, to) {
     var oldCanWhiteCastleShort = false
     var oldCanWhiteCastleLong = false
     var oldCanBlackCastleShort = false

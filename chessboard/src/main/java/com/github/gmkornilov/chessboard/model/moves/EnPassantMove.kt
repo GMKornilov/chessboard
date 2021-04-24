@@ -5,7 +5,7 @@ import com.github.gmkornilov.chessboard.model.Board
 import com.github.gmkornilov.chessboard.model.CellInfo
 import com.github.gmkornilov.chessboard.model.pieces.Pawn
 
-class EnPassantMove(val capturePawn: Pawn, val killedPawn: Pawn, val from: CellInfo, val to: CellInfo, val enPassantCell: CellInfo) : Move {
+internal class EnPassantMove(val capturePawn: Pawn, val killedPawn: Pawn, val from: CellInfo, val to: CellInfo, val enPassantCell: CellInfo) : Move {
     override fun move(board: Board) {
         board.removePiece(enPassantCell)
         board.removePiece(from)

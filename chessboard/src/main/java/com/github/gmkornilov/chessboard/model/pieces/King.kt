@@ -7,7 +7,7 @@ import com.github.gmkornilov.chessboard.model.moves.*
 import kotlin.math.abs
 import kotlin.math.max
 
-class King(isWhite: Boolean) : Piece(isWhite) {
+internal class King(isWhite: Boolean) : Piece(isWhite) {
     companion object {
         val deltas = listOf(
                 Pair(-1, -1),

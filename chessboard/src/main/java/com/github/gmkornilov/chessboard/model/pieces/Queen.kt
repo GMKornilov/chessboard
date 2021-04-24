@@ -7,9 +7,9 @@ import com.github.gmkornilov.chessboard.model.moves.CaptureMove
 import com.github.gmkornilov.chessboard.model.moves.Move
 import com.github.gmkornilov.chessboard.model.moves.TransitionMove
 
-class Queen(isWhite: Boolean) : Piece(isWhite) {
-    val rook = Rook(isWhite)
-    val bishop = Bishop(isWhite)
+internal class Queen(isWhite: Boolean) : Piece(isWhite) {
+    private val rook = Rook(isWhite)
+    private val bishop = Bishop(isWhite)
 
     override var drawableRes = if (isWhite) {
         R.drawable.ic_wq

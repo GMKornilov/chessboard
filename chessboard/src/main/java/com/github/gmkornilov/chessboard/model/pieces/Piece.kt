@@ -5,7 +5,7 @@ import com.github.gmkornilov.chessboard.model.Board
 import com.github.gmkornilov.chessboard.model.CellInfo
 import com.github.gmkornilov.chessboard.model.moves.Move
 
-abstract class Piece(val isWhite: Boolean) {
+internal abstract class Piece(val isWhite: Boolean) {
     @get:DrawableRes abstract var drawableRes: Int
 
     open var position = CellInfo(0, 0)

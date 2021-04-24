@@ -5,7 +5,7 @@ import com.github.gmkornilov.chessboard.model.CellInfo
 import com.github.gmkornilov.chessboard.model.pieces.Piece
 import com.github.gmkornilov.chessboard.model.pieces.Rook
 
-class RookTransitionMove(piece: Rook, from: CellInfo, to: CellInfo) : TransitionMove(piece, from, to) {
+internal class RookTransitionMove(piece: Rook, from: CellInfo, to: CellInfo) : TransitionMove(piece, from, to) {
     var oldCanWhiteCastleShort = false
     var oldCanWhiteCastleLong = false
     var oldCanBlackCastleShort = false

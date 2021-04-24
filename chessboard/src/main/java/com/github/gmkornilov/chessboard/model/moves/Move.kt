@@ -4,7 +4,7 @@ import com.github.gmkornilov.chessboard.model.AnimationInfo
 import com.github.gmkornilov.chessboard.model.Board
 import com.github.gmkornilov.chessboard.model.CellInfo
 
-interface Move {
+internal interface Move {
     fun move(board: Board)
 
     fun undo(board: Board)
