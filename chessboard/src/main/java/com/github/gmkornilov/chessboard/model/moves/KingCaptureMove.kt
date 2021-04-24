@@ -43,7 +43,7 @@ class KingCaptureMove(capturePiece: King, killedPiece: Piece, from: CellInfo, to
         if (capturePiece.isWhite) {
             board.whiteKingPosition = from
         } else {
-            board.blackKingPosition = to
+            board.blackKingPosition = from
         }
     }
 }
