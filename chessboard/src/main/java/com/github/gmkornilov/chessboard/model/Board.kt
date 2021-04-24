@@ -321,10 +321,10 @@ internal class Board(val allowOpponentMoves: Boolean) {
                 if (piece == null) {
                     empty++
                 } else {
-                    empty = 0
                     if (empty != 0) {
                         res.append(empty)
                     }
+                    empty = 0
                     res.append(board[i][j].toString())
                 }
             }
