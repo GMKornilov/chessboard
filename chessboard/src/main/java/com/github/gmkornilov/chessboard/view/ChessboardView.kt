@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.gmkornilov.chessboard.R
 import com.github.gmkornilov.chessboard.model.Board
 import com.github.gmkornilov.chessboard.model.CellInfo
+import com.github.gmkornilov.chessboard.model.MoveNotFoundException
 import com.github.gmkornilov.chessboard.model.moves.Move
 import com.github.gmkornilov.chessboard.model.moves.PromotionMove
 import com.github.gmkornilov.chessboard.model.pieces.Piece
@@ -120,12 +121,22 @@ class ChessboardView @JvmOverloads constructor(
             onFenChangedListener?.onFenChanged(value)
         }
 
+    var lastMove: String?
+        get() = board.lastMoveNotation
+        set(value) {
+            value ?: return
+            val move = board.getMoveByNotation(value)
+                ?: throw MoveNotFoundException("can't find legal move with following notation: $value")
+            doMove(move)
+        }
+
     fun setOnMoveListener(listener: OnMoveListener) {
         onMoveListener = listener
     }
 
     fun setOnFenChangedListener(listener: OnFenChangedListener) {
         onFenChangedListener = listener
+        listener.onFenChanged(getFEN())
     }
 
     private fun getFEN(): String {
@@ -142,7 +153,10 @@ class ChessboardView @JvmOverloads constructor(
         val notation = move.getMoveNotation(board)
         board.move(move, isWhite)
         onMoveListener?.onMove(notation)
-        onFenChangedListener?.onFenChanged(board.toFen())
+        val fen = board.toFen()
+        onFenChangedListener?.onFenChanged(fen)
+        availableMoves = null
+        invalidate()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -251,8 +265,6 @@ class ChessboardView @JvmOverloads constructor(
             dialog.dismiss()
             selectedMove = move
             doMove(move)
-            availableMoves = null
-            invalidate()
         }
 
         recyclerView.adapter = PiecePickAdapter(pieces, clickCallback)
@@ -303,7 +315,7 @@ class ChessboardView @JvmOverloads constructor(
                 }
             }
         }
-        if(draggedPiece != null) {
+        if (draggedPiece != null) {
             drawDraggedPiece(canvas)
         }
     }

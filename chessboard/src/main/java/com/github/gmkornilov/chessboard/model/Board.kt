@@ -72,8 +72,12 @@ class Board(val allowOpponentMoves: Boolean) {
         internal set
 
     var moves = mutableListOf<Pair<Move, BoardExtraInfo>>()
+        private set
 
-    val legalMoves: List<Move>
+    var lastMoveNotation:String = ""
+        private set
+
+    private val legalMoves: List<Move>
         get() {
             val pieces = if (isWhiteTurn) {
                 whitePieces
@@ -173,6 +177,8 @@ class Board(val allowOpponentMoves: Boolean) {
             turnNumber
         )
         moves.add(Pair(move, info))
+
+        lastMoveNotation = move.getMoveNotation(this)
 
         move.move(this)
 
@@ -384,6 +390,7 @@ class Board(val allowOpponentMoves: Boolean) {
         turnNumber = 0
 
         moves = mutableListOf()
+        lastMoveNotation = ""
     }
 
     init {
