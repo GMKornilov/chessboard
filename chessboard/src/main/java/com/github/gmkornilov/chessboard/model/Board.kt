@@ -73,6 +73,25 @@ class Board(val allowOpponentMoves: Boolean) {
 
     var moves = mutableListOf<Pair<Move, BoardExtraInfo>>()
 
+    val legalMoves: List<Move>
+        get() {
+            val pieces = if (isWhiteTurn) {
+                whitePieces
+            } else {
+                blackPieces
+            }
+
+            return pieces.map { it.getLegalMoves(this) }.flatten()
+        }
+
+    fun getMoveByNotation(notation: String): Move? {
+        var toFind = notation
+        if (notation.endsWith('#') || notation.endsWith('+')) {
+            toFind = notation.dropLast(1)
+        }
+        return legalMoves.find { it.getMoveNotation(this) == toFind }
+    }
+
     fun getMoves(row: Int, col: Int, isWhite: Boolean): List<Move> {
         if (isWhiteTurn != isWhite && !allowOpponentMoves) {
             return emptyList()
@@ -345,7 +364,7 @@ class Board(val allowOpponentMoves: Boolean) {
         return res.toString()
     }
 
-    fun clear() {
+    private fun clear() {
         for (i in board.indices) {
             for (j in board[i].indices) {
                 board[i][j] = null
