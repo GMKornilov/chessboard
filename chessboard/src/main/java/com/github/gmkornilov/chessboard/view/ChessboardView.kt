@@ -28,11 +28,16 @@ class ChessboardView @JvmOverloads constructor(
         fun onMove(move: String)
     }
 
+    interface OnFenChangedListener {
+        fun onFenChanged(newFen: String)
+    }
+
     private val board: Board by lazy {
         Board(allowOpponentMoves)
     }
 
     private var onMoveListener: OnMoveListener? = null
+    private var onFenChangedListener: OnFenChangedListener? = null
 
     private var availableMoves: List<Move>? = null
 
@@ -107,18 +112,37 @@ class ChessboardView @JvmOverloads constructor(
         }
     }
 
+    var fen: String?
+        get() = getFEN()
+        set(value) {
+            value ?: return
+            setFEN(value)
+            onFenChangedListener?.onFenChanged(value)
+        }
+
     fun setOnMoveListener(listener: OnMoveListener) {
         onMoveListener = listener
     }
 
-    fun getFEN(): String {
+    fun setOnFenChangedListener(listener: OnFenChangedListener) {
+        onFenChangedListener = listener
+    }
+
+    private fun getFEN(): String {
         return board.toFen()
     }
 
-    fun setFEN(fen: String) {
+    private fun setFEN(fen: String) {
         availableMoves = null
         board.parseFEN(fen)
         invalidate()
+    }
+
+    private fun doMove(move: Move) {
+        val notation = move.getMoveNotation(board)
+        board.move(move, isWhite)
+        onMoveListener?.onMove(notation)
+        onFenChangedListener?.onFenChanged(board.toFen())
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -209,9 +233,7 @@ class ChessboardView @JvmOverloads constructor(
         } else {
             val move = moves.find { it.getDisplayedCell(isWhite) == CellInfo(toCol, toRow) }
             if (move != null) {
-                val notation = move.getMoveNotation(board)
-                board.move(move, isWhite)
-                onMoveListener?.onMove(notation)
+                doMove(move)
             }
             availableMoves = null
             invalidate()
@@ -228,9 +250,7 @@ class ChessboardView @JvmOverloads constructor(
         val clickCallback: (PromotionMove) -> Unit = { move ->
             dialog.dismiss()
             selectedMove = move
-            val notation = move.getMoveNotation(board)
-            board.move(move, isWhite)
-            onMoveListener?.onMove(notation)
+            doMove(move)
             availableMoves = null
             invalidate()
         }
