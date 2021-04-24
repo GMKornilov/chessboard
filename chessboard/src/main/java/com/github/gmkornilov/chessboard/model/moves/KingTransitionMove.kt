@@ -43,7 +43,7 @@ class KingTransitionMove(piece: King, from: CellInfo, to: CellInfo) : Transition
         if (piece.isWhite) {
             board.whiteKingPosition = from
         } else {
-            board.blackKingPosition = to
+            board.blackKingPosition = from
         }
     }
 }
