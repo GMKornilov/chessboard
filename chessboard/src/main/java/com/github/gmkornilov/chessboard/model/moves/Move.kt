@@ -12,13 +12,7 @@ internal interface Move {
     fun getAnimationsInfo(isWhite: Boolean): List<AnimationInfo>
 
     fun getUndoAnimationsInfo(isWhite: Boolean): List<AnimationInfo> {
-        val animationInfos = getAnimationsInfo(isWhite)
-        val res = mutableListOf<AnimationInfo>()
-
-        for (animationInfo in animationInfos.reversed()) {
-            res.add(AnimationInfo(animationInfo.piece, animationInfo.to, animationInfo.from))
-        }
-        return res
+        return getAnimationsInfo(isWhite).map { AnimationInfo(it.piece, it.to, it.from) }
     }
 
     fun getMoveCell(): CellInfo

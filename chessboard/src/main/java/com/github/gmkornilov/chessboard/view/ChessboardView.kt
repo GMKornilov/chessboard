@@ -162,8 +162,9 @@ class ChessboardView @JvmOverloads constructor(
         if (lastMove == null) {
             return
         }
-        board.undo(isWhite)
+        currentAnimations.addAll(board.undo(isWhite))
         onFenChangedListener?.onFenChanged(getFEN())
+        startAnimation()
         invalidate()
     }
 
@@ -375,10 +376,14 @@ class ChessboardView @JvmOverloads constructor(
             for (piece in boardRow) {
                 piece ?: continue
                 val animInfo = currentAnimations.find { it.piece == piece }
-                if (animInfo?.from != null && piece != animatedPiece) {
-                    val x = sideX + cellSize * animInfo.from.row + (cellSize - normalPieceSize) / 2
-                    val y = sideY + cellSize * animInfo.from.col + (cellSize - normalPieceSize) / 2
-                    drawPieceAt(canvas, piece, x, y, normalPieceSize)
+                if (animInfo != null && piece != animatedPiece) {
+                    if (animInfo.from != null) {
+                        val x =
+                            sideX + cellSize * animInfo.from.col + (cellSize - normalPieceSize) / 2
+                        val y =
+                            sideY + cellSize * animInfo.from.row + (cellSize - normalPieceSize) / 2
+                        drawPieceAt(canvas, piece, x, y, normalPieceSize)
+                    }
                 } else if (piece != draggedPiece && piece != animatedPiece) {
                     drawPiece(canvas, piece)
                 }
