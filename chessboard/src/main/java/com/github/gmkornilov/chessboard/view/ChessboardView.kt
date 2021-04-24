@@ -13,6 +13,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.gmkornilov.chessboard.R
+import com.github.gmkornilov.chessboard.model.AnimationInfo
 import com.github.gmkornilov.chessboard.model.Board
 import com.github.gmkornilov.chessboard.model.CellInfo
 import com.github.gmkornilov.chessboard.model.MoveNotFoundException
@@ -46,6 +47,18 @@ class ChessboardView @JvmOverloads constructor(
     private var draggedPieceMoved = false
     private var dragX = -1f
     private var dragY = -1f
+
+    private var currentAnimations = mutableListOf<AnimationInfo>()
+
+    private var animatedPiece: Piece? = null
+    private var animX = -1f
+    private var animY = -1f
+    private var animDeltaX = -1f
+    private var animDeltaY = -1f
+    private var animToX = -1f
+    private var animToY = -1f
+    private var animationsLeft = -1
+    private val animationDrawAmounts = 15
 
     private var clickedOnce = false
 
@@ -133,7 +146,7 @@ class ChessboardView @JvmOverloads constructor(
             value ?: return
             val move = board.getMoveByNotation(value)
                 ?: throw MoveNotFoundException("can't find legal move with following notation: $value")
-            doMove(move)
+            doMove(move, false)
         }
 
     fun setOnMoveListener(listener: OnMoveListener) {
@@ -164,13 +177,17 @@ class ChessboardView @JvmOverloads constructor(
         invalidate()
     }
 
-    private fun doMove(move: Move) {
+    private fun doMove(move: Move, isFromDrag: Boolean) {
         val notation = move.getMoveNotation(board)
-        board.move(move, isWhite)
+        currentAnimations.addAll(board.move(move, isWhite))
+        if (isFromDrag) {
+            currentAnimations.removeFirst()
+        }
         onMoveListener?.onMove(notation)
         val fen = board.toFen()
         onFenChangedListener?.onFenChanged(fen)
         availableMoves = null
+        startAnimation()
         invalidate()
     }
 
@@ -193,10 +210,18 @@ class ChessboardView @JvmOverloads constructor(
         drawCells(canvas)
         drawPieces(canvas)
         drawMoves(canvas)
+
+        val piece = animatedPiece
+        if (piece != null) {
+            drawAnimatedPiece(canvas, piece)
+        }
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         event ?: return false
+        if (animatedPiece != null) {
+            return true
+        }
 
         val col = ((event.x - sideX) / cellSize).toInt()
         val row = ((event.y - sideY) / cellSize).toInt()
@@ -221,13 +246,13 @@ class ChessboardView @JvmOverloads constructor(
             MotionEvent.ACTION_UP -> {
                 Log.println(Log.WARN, "chessboard", "HEY")
                 if (draggedPiece != null && draggedPieceMoved) {
-                    onPieceMoved(row, col)
+                    onPieceMoved(row, col, true)
                     clickedOnce = false
                 } else {
                     val moves = availableMoves
                     if (clickedOnce) {
                         clickedOnce = false
-                        onCellCLicked(row, col)
+                        onCellClicked(row, col)
                     } else if (moves != null && moves.isNotEmpty()) {
                         clickedOnce = true
                     }
@@ -240,10 +265,34 @@ class ChessboardView @JvmOverloads constructor(
         return true
     }
 
-    private fun onCellCLicked(row: Int, col: Int) {
+    private fun startAnimation() {
+        if (currentAnimations.isEmpty()) {
+            return
+        }
+        val (piece, from, to) = currentAnimations[0]
+        if (from == null || to == null) {
+            currentAnimations.removeFirst()
+            startAnimation()
+            return
+        }
+        animationsLeft = animationDrawAmounts
+        animatedPiece = piece
+        animX = sideX + cellSize * from.col + (cellSize - normalPieceSize) / 2
+        animY = sideY + cellSize * from.row + (cellSize - normalPieceSize) / 2
+
+        animToX = sideX + cellSize * to.col + (cellSize - normalPieceSize) / 2
+        animToY = sideY + cellSize * to.row + (cellSize - normalPieceSize) / 2
+
+        animDeltaX = (animToX - animX) / animationDrawAmounts
+        animDeltaY = (animToY - animY) / animationDrawAmounts
+
+        invalidate()
+    }
+
+    private fun onCellClicked(row: Int, col: Int) {
         val moves = availableMoves
         if (moves != null) {
-            onPieceMoved(row, col)
+            onPieceMoved(row, col, false)
         } else {
             val (infoCol, infoRow) = CellInfo.fromAnimationIndexes(row, col, isWhite)
             availableMoves = board.getMoves(infoRow, infoCol, isWhite)
@@ -251,7 +300,7 @@ class ChessboardView @JvmOverloads constructor(
         }
     }
 
-    private fun onPieceMoved(toRow: Int, toCol: Int) {
+    private fun onPieceMoved(toRow: Int, toCol: Int, isFromDrag: Boolean) {
         val moves = availableMoves ?: return
         val cellInfo = CellInfo(toCol, toRow)
         val promotionMoves = moves.filter {
@@ -262,7 +311,7 @@ class ChessboardView @JvmOverloads constructor(
         } else {
             val move = moves.find { it.getDisplayedCell(isWhite) == CellInfo(toCol, toRow) }
             if (move != null) {
-                doMove(move)
+                doMove(move, isFromDrag)
             }
             availableMoves = null
             invalidate()
@@ -279,7 +328,7 @@ class ChessboardView @JvmOverloads constructor(
         val clickCallback: (PromotionMove) -> Unit = { move ->
             dialog.dismiss()
             selectedMove = move
-            doMove(move)
+            doMove(move, false)
         }
 
         recyclerView.adapter = PiecePickAdapter(pieces, clickCallback)
@@ -325,7 +374,12 @@ class ChessboardView @JvmOverloads constructor(
         for (boardRow in board.board) {
             for (piece in boardRow) {
                 piece ?: continue
-                if (piece != draggedPiece) {
+                val animInfo = currentAnimations.find { it.piece == piece }
+                if (animInfo?.from != null && piece != animatedPiece) {
+                    val x = sideX + cellSize * animInfo.from.row + (cellSize - normalPieceSize) / 2
+                    val y = sideY + cellSize * animInfo.from.col + (cellSize - normalPieceSize) / 2
+                    drawPieceAt(canvas, piece, x, y, normalPieceSize)
+                } else if (piece != draggedPiece && piece != animatedPiece) {
                     drawPiece(canvas, piece)
                 }
             }
@@ -342,6 +396,19 @@ class ChessboardView @JvmOverloads constructor(
         drawPieceAt(canvas, piece, left, top, normalPieceSize)
     }
 
+    private fun drawAnimatedPiece(canvas: Canvas, piece: Piece) {
+        drawPieceAt(canvas, piece, animX, animY, normalPieceSize)
+        animX += animDeltaX
+        animY += animDeltaY
+        animationsLeft--
+        if (animationsLeft == 0) {
+            currentAnimations.removeFirst()
+            animatedPiece = null
+            startAnimation()
+        }
+        invalidate()
+    }
+
     private fun drawDraggedPiece(canvas: Canvas) {
         val piece = draggedPiece
         piece ?: return
@@ -350,7 +417,7 @@ class ChessboardView @JvmOverloads constructor(
 
     private fun drawPieceAt(canvas: Canvas, piece: Piece, x: Float, y: Float, sz: Float) {
         val drawable = piecesBitmaps[piece.drawableRes]
-            ?: throw Exception("${piece.drawableRes} ${resources.getResourceEntryName(piece.drawableRes)}\n ${piecesBitmaps}")
+            ?: throw Exception("Piece drawable resource not found")
 
         drawable.setBounds(0, 0, sz.toInt(), sz.toInt())
 
