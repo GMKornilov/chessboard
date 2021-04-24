@@ -122,7 +122,13 @@ class ChessboardView @JvmOverloads constructor(
         }
 
     var lastMove: String?
-        get() = board.lastMoveNotation
+        get() {
+            val notation = board.lastMoveNotation
+            if (notation.isEmpty()) {
+                return null
+            }
+            return notation
+        }
         set(value) {
             value ?: return
             val move = board.getMoveByNotation(value)
@@ -137,6 +143,12 @@ class ChessboardView @JvmOverloads constructor(
     fun setOnFenChangedListener(listener: OnFenChangedListener) {
         onFenChangedListener = listener
         listener.onFenChanged(getFEN())
+    }
+
+    fun undo() {
+        board.undo(isWhite)
+        onFenChangedListener?.onFenChanged(getFEN())
+        invalidate()
     }
 
     private fun getFEN(): String {

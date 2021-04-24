@@ -305,6 +305,8 @@ class Board(val allowOpponentMoves: Boolean) {
         if (extraInfo.size >= 5) {
             turnNumber = extraInfo[4].toInt()
         }
+
+        lastMoveNotation = ""
     }
 
     fun toFen(): String {
