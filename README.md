@@ -21,7 +21,7 @@ allprojects {
 2. Add the dependency to your module builg.gradle:
 ```
 dependencies {
-    implementation 'com.github.GMKornilov:chessboard:-SNAPSHOT'
+    implementation 'com.github.GMKornilov:chessboard:v1.0.1'
 }
 ```
 
