@@ -6,7 +6,7 @@ import com.github.gmkornilov.chessboard.model.CellInfo
 import com.github.gmkornilov.chessboard.model.pieces.King
 import com.github.gmkornilov.chessboard.model.pieces.Rook
 
-class CastleMove(val king: King, val rook: Rook, val isWhite: Boolean, val isShort: Boolean) : Move {
+internal class CastleMove(val king: King, val rook: Rook, val isWhite: Boolean, val isShort: Boolean) : Move {
     companion object {
         // Kings uncastled positions CellInfo
         val e1CellInfo = CellInfo(4, 0)

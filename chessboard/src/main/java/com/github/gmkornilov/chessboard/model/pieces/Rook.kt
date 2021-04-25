@@ -7,7 +7,7 @@ import com.github.gmkornilov.chessboard.model.moves.*
 import kotlin.math.abs
 import kotlin.math.sign
 
-class Rook(isWhite: Boolean) : Piece(isWhite) {
+internal class Rook(isWhite: Boolean) : Piece(isWhite) {
     override var drawableRes = if (isWhite) {
         R.drawable.ic_wr
     } else {

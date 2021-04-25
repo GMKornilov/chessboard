@@ -1,6 +1,6 @@
 package com.github.gmkornilov.chessboard.model
 
-data class CellInfo(var col: Int, var row: Int) {
+internal data class CellInfo(var col: Int, var row: Int) {
 
     companion object {
         fun fromAnimationIndexes(row: Int, col: Int, isWhitePerspective: Boolean): CellInfo {

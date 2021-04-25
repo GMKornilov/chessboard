@@ -4,7 +4,7 @@ import com.github.gmkornilov.chessboard.model.moves.*
 import com.github.gmkornilov.chessboard.model.pieces.*
 import kotlin.math.abs
 
-class Board(val allowOpponentMoves: Boolean) {
+internal class Board(val allowOpponentMoves: Boolean) {
     companion object {
         const val BOARD_SIZE = 8
     }
@@ -72,6 +72,36 @@ class Board(val allowOpponentMoves: Boolean) {
         internal set
 
     var moves = mutableListOf<Pair<Move, BoardExtraInfo>>()
+        private set
+
+    var lastMoveNotation:String = ""
+        private set
+
+    private val legalMoves: List<Move>
+        get() {
+            val pieces = if (isWhiteTurn) {
+                whitePieces
+            } else {
+                blackPieces
+            }
+
+            return pieces.map { it.getLegalMoves(this) }.flatten()
+        }
+
+    val isCheck: Boolean
+        get() = isKingHit() && legalMoves.isNotEmpty()
+    val isCheckmate: Boolean
+        get() = isKingHit() && legalMoves.isEmpty()
+    val isStalemate: Boolean
+        get() = !isKingHit() && legalMoves.isEmpty()
+
+    fun getMoveByNotation(notation: String): Move? {
+        var toFind = notation
+        if (notation.endsWith('#') || notation.endsWith('+')) {
+            toFind = notation.dropLast(1)
+        }
+        return legalMoves.find { it.getMoveNotation(this) == toFind }
+    }
 
     fun getMoves(row: Int, col: Int, isWhite: Boolean): List<Move> {
         if (isWhiteTurn != isWhite && !allowOpponentMoves) {
@@ -143,6 +173,15 @@ class Board(val allowOpponentMoves: Boolean) {
         return false
     }
 
+    private fun isKingHit(): Boolean {
+        val kingPosition = if (isWhiteTurn) {
+            whiteKingPosition
+        } else {
+            blackKingPosition
+        }
+        return isHit(kingPosition, isWhiteTurn)
+    }
+
     fun move(move: Move, isWhite: Boolean): List<AnimationInfo> {
         val info = BoardExtraInfo(
             Pair(canWhiteCastleShort, canWhiteCastleLong),
@@ -155,7 +194,10 @@ class Board(val allowOpponentMoves: Boolean) {
         )
         moves.add(Pair(move, info))
 
+        lastMoveNotation = move.getMoveNotation(this)
+
         move.move(this)
+
 
         canEnPassant = false
         if (move is TransitionMove && move.piece is Pawn && abs(move.from.row - move.to.row) == 2) {
@@ -167,6 +209,12 @@ class Board(val allowOpponentMoves: Boolean) {
             turnNumber++
         }
         isWhiteTurn = !isWhiteTurn
+        if (isCheck) {
+            lastMoveNotation += "+"
+        }
+        if (isCheckmate) {
+            lastMoveNotation += "#"
+        }
 
         fiftyMovesRule += 1
         if (move is CaptureMove || move is EnPassantMove || move is PromotionMove ||
@@ -181,6 +229,9 @@ class Board(val allowOpponentMoves: Boolean) {
     }
 
     fun undo(isWhite: Boolean): List<AnimationInfo> {
+        if (moves.isEmpty()) {
+            return emptyList()
+        }
         val (move, info) = moves.removeLast()
         move.undo(this)
 
@@ -280,6 +331,8 @@ class Board(val allowOpponentMoves: Boolean) {
         if (extraInfo.size >= 5) {
             turnNumber = extraInfo[4].toInt()
         }
+
+        lastMoveNotation = ""
     }
 
     fun toFen(): String {
@@ -291,10 +344,10 @@ class Board(val allowOpponentMoves: Boolean) {
                 if (piece == null) {
                     empty++
                 } else {
-                    empty = 0
                     if (empty != 0) {
                         res.append(empty)
                     }
+                    empty = 0
                     res.append(board[i][j].toString())
                 }
             }
@@ -345,7 +398,7 @@ class Board(val allowOpponentMoves: Boolean) {
         return res.toString()
     }
 
-    fun clear() {
+    private fun clear() {
         for (i in board.indices) {
             for (j in board[i].indices) {
                 board[i][j] = null
@@ -365,6 +418,7 @@ class Board(val allowOpponentMoves: Boolean) {
         turnNumber = 0
 
         moves = mutableListOf()
+        lastMoveNotation = ""
     }
 
     init {

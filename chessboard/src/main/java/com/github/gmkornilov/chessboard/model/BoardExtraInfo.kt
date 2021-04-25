@@ -1,6 +1,6 @@
 package com.github.gmkornilov.chessboard.model
 
-data class BoardExtraInfo(
+internal data class BoardExtraInfo(
     val canWhiteCastle: Pair<Boolean, Boolean>,
     val canBlackCastle: Pair<Boolean, Boolean>,
     val canEnPassant: Boolean,

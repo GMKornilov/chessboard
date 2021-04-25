@@ -7,7 +7,7 @@ import com.github.gmkornilov.chessboard.model.pieces.Pawn
 import com.github.gmkornilov.chessboard.model.pieces.Piece
 import java.util.*
 
-open class CaptureMove(val capturePiece: Piece, val killedPiece: Piece, val from: CellInfo, val to: CellInfo) : Move {
+internal open class CaptureMove(val capturePiece: Piece, val killedPiece: Piece, val from: CellInfo, val to: CellInfo) : Move {
     override fun move(board: Board) {
         board.removePiece(from)
         board.removePiece(to)

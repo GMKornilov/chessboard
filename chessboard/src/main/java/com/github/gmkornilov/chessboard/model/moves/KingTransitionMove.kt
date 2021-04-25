@@ -5,7 +5,7 @@ import com.github.gmkornilov.chessboard.model.CellInfo
 import com.github.gmkornilov.chessboard.model.pieces.King
 import com.github.gmkornilov.chessboard.model.pieces.Piece
 
-class KingTransitionMove(piece: King, from: CellInfo, to: CellInfo) : TransitionMove(piece, from, to) {
+internal class KingTransitionMove(piece: King, from: CellInfo, to: CellInfo) : TransitionMove(piece, from, to) {
     var oldCanWhiteCastleShort = false
     var oldCanWhiteCastleLong = false
     var oldCanBlackCastleShort = false
@@ -43,7 +43,7 @@ class KingTransitionMove(piece: King, from: CellInfo, to: CellInfo) : Transition
         if (piece.isWhite) {
             board.whiteKingPosition = from
         } else {
-            board.blackKingPosition = to
+            board.blackKingPosition = from
         }
     }
 }

@@ -7,7 +7,7 @@ import com.github.gmkornilov.chessboard.model.moves.CaptureMove
 import com.github.gmkornilov.chessboard.model.moves.Move
 import com.github.gmkornilov.chessboard.model.moves.TransitionMove
 
-class Knight(isWhite: Boolean) : Piece(isWhite) {
+internal class Knight(isWhite: Boolean) : Piece(isWhite) {
     companion object {
         val deltas = listOf(
                 Pair(-1, -2),

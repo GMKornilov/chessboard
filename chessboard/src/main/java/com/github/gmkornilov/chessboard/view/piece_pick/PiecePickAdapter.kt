@@ -9,7 +9,7 @@ import com.github.gmkornilov.chessboard.R
 import com.github.gmkornilov.chessboard.model.moves.PromotionMove
 import com.github.gmkornilov.chessboard.model.pieces.Piece
 
-class PiecePickAdapter(private val moves: List<PromotionMove>, private val callback: (PromotionMove) -> Unit) :
+internal class PiecePickAdapter(private val moves: List<PromotionMove>, private val callback: (PromotionMove) -> Unit) :
     RecyclerView.Adapter<PiecePickAdapter.ViewHolder>() {
     class ViewHolder(view: View, val callback: (PromotionMove) -> Unit) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.findViewById(R.id.pieceImageView)
