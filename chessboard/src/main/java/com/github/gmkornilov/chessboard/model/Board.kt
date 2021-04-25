@@ -88,6 +88,13 @@ internal class Board(val allowOpponentMoves: Boolean) {
             return pieces.map { it.getLegalMoves(this) }.flatten()
         }
 
+    val isCheck: Boolean
+        get() = isKingHit() && legalMoves.isNotEmpty()
+    val isCheckmate: Boolean
+        get() = isKingHit() && legalMoves.isEmpty()
+    val isStalemate: Boolean
+        get() = !isKingHit() && legalMoves.isEmpty()
+
     fun getMoveByNotation(notation: String): Move? {
         var toFind = notation
         if (notation.endsWith('#') || notation.endsWith('+')) {
@@ -166,6 +173,15 @@ internal class Board(val allowOpponentMoves: Boolean) {
         return false
     }
 
+    private fun isKingHit(): Boolean {
+        val kingPosition = if (isWhiteTurn) {
+            whiteKingPosition
+        } else {
+            blackKingPosition
+        }
+        return isHit(kingPosition, isWhiteTurn)
+    }
+
     fun move(move: Move, isWhite: Boolean): List<AnimationInfo> {
         val info = BoardExtraInfo(
             Pair(canWhiteCastleShort, canWhiteCastleLong),
@@ -182,6 +198,7 @@ internal class Board(val allowOpponentMoves: Boolean) {
 
         move.move(this)
 
+
         canEnPassant = false
         if (move is TransitionMove && move.piece is Pawn && abs(move.from.row - move.to.row) == 2) {
             canEnPassant = true
@@ -192,6 +209,12 @@ internal class Board(val allowOpponentMoves: Boolean) {
             turnNumber++
         }
         isWhiteTurn = !isWhiteTurn
+        if (isCheck) {
+            lastMoveNotation += "+"
+        }
+        if (isCheckmate) {
+            lastMoveNotation += "#"
+        }
 
         fiftyMovesRule += 1
         if (move is CaptureMove || move is EnPassantMove || move is PromotionMove ||

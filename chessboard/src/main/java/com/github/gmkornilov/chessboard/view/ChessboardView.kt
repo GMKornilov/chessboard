@@ -34,12 +34,32 @@ class ChessboardView @JvmOverloads constructor(
         fun onFenChanged(newFen: String)
     }
 
+    interface OnUndoListener {
+        fun onUndo()
+    }
+
+    interface OnCheckListener {
+        fun onCheck(isWhiteChecked: Boolean)
+    }
+
+    interface OnCheckmateListener {
+        fun onCheckmate(whiteLost: Boolean)
+    }
+
+    interface OnStalemateListener {
+        fun onStalemate()
+    }
+
     private val board: Board by lazy {
         Board(allowOpponentMoves)
     }
 
-    private var onMoveListener: OnMoveListener? = null
-    private var onFenChangedListener: OnFenChangedListener? = null
+    private var onMoveListeners = mutableListOf<OnMoveListener>()
+    private var onFenChangedListeners = mutableListOf<OnFenChangedListener>()
+    private val onUndoListeners = mutableListOf<OnUndoListener>()
+    private val onCheckListeners = mutableListOf<OnCheckListener>()
+    private val onCheckmateListeners = mutableListOf<OnCheckmateListener>()
+    private val onStalemateListeners = mutableListOf<OnStalemateListener>()
 
     private var availableMoves: List<Move>? = null
 
@@ -131,7 +151,7 @@ class ChessboardView @JvmOverloads constructor(
         set(value) {
             value ?: return
             setFEN(value)
-            onFenChangedListener?.onFenChanged(value)
+            notifyFenChanged(value)
         }
 
     var lastMove: String?
@@ -149,21 +169,99 @@ class ChessboardView @JvmOverloads constructor(
             doMove(move, false)
         }
 
-    fun setOnMoveListener(listener: OnMoveListener) {
-        onMoveListener = listener
+    // region add listeners
+
+    fun addOnMoveListener(listener: OnMoveListener) {
+        onMoveListeners.add(listener)
     }
 
-    fun setOnFenChangedListener(listener: OnFenChangedListener) {
-        onFenChangedListener = listener
+    fun addOnFenChangedListener(listener: OnFenChangedListener) {
+        onFenChangedListeners.add(listener)
         listener.onFenChanged(getFEN())
     }
+
+    fun addOnUndoListener(listener: OnUndoListener) {
+        onUndoListeners.add(listener)
+    }
+
+    fun addOnCheckListener(listener: OnCheckListener) {
+        onCheckListeners.add(listener)
+    }
+
+    fun addOnCheckmateListener(listener: OnCheckmateListener) {
+        onCheckmateListeners.add(listener)
+    }
+
+    fun addOnStalemateListener(listener: OnStalemateListener) {
+        onStalemateListeners.add(listener)
+    }
+
+    // endregion
+
+    // region remove listeners
+
+    fun removeOnMoveListener(listener: OnMoveListener) {
+        onMoveListeners.remove(listener)
+    }
+
+    fun removeOnFenChangedListener(listener: OnFenChangedListener) {
+        onFenChangedListeners.remove(listener)
+    }
+
+    fun removeOnUndoListener(listener: OnUndoListener) {
+        onUndoListeners.remove(listener)
+    }
+
+    fun removeOnCheckListener(listener: OnCheckListener) {
+        onCheckListeners.remove(listener)
+    }
+
+    fun removeOnCheckmateListener(listener: OnCheckmateListener) {
+        onCheckmateListeners.remove(listener)
+    }
+
+    fun removeOnStalemateListener(listener: OnStalemateListener) {
+        onStalemateListeners.remove(listener)
+    }
+
+    // endregion
+
+    // region notify listeners
+
+    fun notifyMove(move: String) {
+        onMoveListeners.forEach { it.onMove(move) }
+    }
+
+    fun notifyFenChanged(newFen: String) {
+        onFenChangedListeners.forEach { it.onFenChanged(newFen) }
+    }
+
+    fun notifyUndo() {
+        onUndoListeners.forEach { it.onUndo() }
+    }
+
+    fun notifyCheck(isWhiteChecked: Boolean) {
+        onCheckListeners.forEach { it.onCheck(isWhiteChecked) }
+    }
+
+    fun notifyCheckmate(whiteLost: Boolean) {
+        onCheckmateListeners.forEach { it.onCheckmate(whiteLost) }
+    }
+
+    fun notifyStalemate() {
+        onStalemateListeners.forEach { it.onStalemate() }
+    }
+
+    // endregion
 
     fun undo() {
         if (lastMove == null) {
             return
         }
         currentAnimations.addAll(board.undo(isWhite))
-        onFenChangedListener?.onFenChanged(getFEN())
+        // onFenChangedListener?.onFenChanged(getFEN())
+        notifyFenChanged(getFEN())
+        notifyUndo()
         startAnimation()
         invalidate()
     }
@@ -179,17 +277,37 @@ class ChessboardView @JvmOverloads constructor(
     }
 
     private fun doMove(move: Move, isFromDrag: Boolean) {
-        val notation = move.getMoveNotation(board)
+        var notation = move.getMoveNotation(board)
         currentAnimations.addAll(board.move(move, isWhite))
         if (isFromDrag) {
             currentAnimations.removeFirst()
         }
-        onMoveListener?.onMove(notation)
+
         val fen = board.toFen()
-        onFenChangedListener?.onFenChanged(fen)
+        notifyFenChanged(fen)
         availableMoves = null
         startAnimation()
         invalidate()
+
+        val isCheck = board.isCheck
+        if (board.isCheck) {
+            notation += "+"
+        }
+        val isCheckmate = board.isCheckmate
+        if (board.isCheckmate) {
+            notation += "#"
+        }
+        val isStalemate = board.isStalemate
+        notifyMove(notation)
+        if (isCheck) {
+            notifyCheck(board.isWhiteTurn)
+        }
+        if (isCheckmate) {
+            notifyCheckmate(board.isWhiteTurn)
+        }
+        if (isStalemate) {
+            notifyCheckmate(board.isWhiteTurn)
+        }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -346,6 +464,8 @@ class ChessboardView @JvmOverloads constructor(
         dialog.show()
     }
 
+    // region draw logic
+
     private fun drawMoves(canvas: Canvas) {
         availableMoves?.let {
             for (move in it) {
@@ -496,4 +616,6 @@ class ChessboardView @JvmOverloads constructor(
 
         canvas.drawText(str, x, y, paint)
     }
+
+    // endregion
 }
