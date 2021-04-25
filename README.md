@@ -44,11 +44,11 @@ dependencies {
 1. ```ChessboardView``` - view itself.
 2. ```ChessboardView.BoardListener``` - listener for main board events. Contains following methods:
     - ```onMove(move: String): Unit```(```move``` is provided as Short Algebraic Notation(SAN))
-    - ```onFenChanged(newFen: String)```
-    - ```onUndo()```
-    - ```onCheck(isWhiteChecked: Boolean)```
-    - ```onCheckmate(whiteLost: Boolean)```
-    - ```onStalemate()```
+    - ```onFenChanged(newFen: String): Unit```
+    - ```onUndo(): Unit```
+    - ```onCheck(isWhiteChecked: Boolean): Unit```
+    - ```onCheckmate(whiteLost: Boolean): Unit```
+    - ```onStalemate(): Unit```
 
 
 ## Public properties
