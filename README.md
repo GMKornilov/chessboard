@@ -57,6 +57,8 @@ dependencies {
 2. ```lastMove: String?``` - last move played in current position. Getter returns SAN of the last move or null, if no move was played.
 Setter take move in SAN as argument and tries to evaluate given move on board.
 After evaluation ```onFenChanged``` and ```onMove``` of corresponding listeners are called.
+3. ```isWhite: Boolean``` - is board turned towards white or black player.
+4. ```allowOpponentMoves``` - can player also play as his opponent.
 
 ## Public methods
 
