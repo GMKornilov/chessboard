@@ -86,9 +86,6 @@ class ChessboardView @JvmOverloads constructor(
         it to ResourcesCompat.getDrawable(resources, it, null)
     }.toMap()
 
-    private var isWhite = false
-    private var allowOpponentMoves = false
-
     private val darkColor = Color.parseColor("#fcaf68")
     private val lightColor = Color.parseColor("#914f11")
     private val moveColor = Color.parseColor("#91240A")
@@ -152,6 +149,22 @@ class ChessboardView @JvmOverloads constructor(
             val move = board.getMoveByNotation(value)
                 ?: throw MoveNotFoundException("can't find legal move with following notation: $value")
             doMove(move, false)
+        }
+
+    private var _isWhite = false
+    var isWhite: Boolean
+        get() = _isWhite
+        set(value) {
+            _isWhite = value
+            invalidate()
+        }
+
+    private var _allowOpponentMoves = false
+    var allowOpponentMoves: Boolean
+        get() = _allowOpponentMoves
+        set(value) {
+            _allowOpponentMoves = value
+            invalidate()
         }
 
     fun addBoardListener(listener: BoardListener) {
