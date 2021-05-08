@@ -38,6 +38,10 @@ class ChessboardView @JvmOverloads constructor(
         fun onCheckmate(whiteLost: Boolean)
 
         fun onStalemate()
+
+        fun onIsWhiteChanged(isWhite: Boolean)
+
+        fun onAllowOpponentMovesChanged(allowOpponentMovesChanged: Boolean)
     }
 
     private val board: Board by lazy {
@@ -156,6 +160,7 @@ class ChessboardView @JvmOverloads constructor(
         get() = _isWhite
         set(value) {
             _isWhite = value
+            notifyIsWhiteChanged()
             invalidate()
         }
 
@@ -164,6 +169,7 @@ class ChessboardView @JvmOverloads constructor(
         get() = _allowOpponentMoves
         set(value) {
             _allowOpponentMoves = value
+            notifyAllowOpponentMovesChanged()
             invalidate()
         }
 
@@ -202,6 +208,13 @@ class ChessboardView @JvmOverloads constructor(
         boardListeners.forEach { it.onStalemate() }
     }
 
+    private fun notifyIsWhiteChanged() {
+        boardListeners.forEach { it.onIsWhiteChanged(isWhite) }
+    }
+
+    private fun notifyAllowOpponentMovesChanged() {
+        boardListeners.forEach { it.onAllowOpponentMovesChanged(allowOpponentMoves) }
+    }
     // endregion
 
     fun undo() {
