@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
@@ -44,7 +45,7 @@ class ChessboardView @JvmOverloads constructor(
         fun onAllowOpponentMovesChanged(allowOpponentMovesChanged: Boolean)
     }
 
-    private lateinit var board: Board
+    private val board: Board
 
     private var boardListeners = mutableListOf<BoardListener>()
 
@@ -216,6 +217,14 @@ class ChessboardView @JvmOverloads constructor(
     }
     // endregion
 
+    private fun redraw() {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            invalidate()
+        } else {
+            postInvalidate()
+        }
+    }
+
     fun undo() {
         if (lastMove == null) {
             return
@@ -234,7 +243,7 @@ class ChessboardView @JvmOverloads constructor(
     private fun setFEN(fen: String) {
         availableMoves = null
         board.parseFEN(fen)
-        invalidate()
+        redraw()
     }
 
     private fun doMove(move: Move, isFromDrag: Boolean) {
