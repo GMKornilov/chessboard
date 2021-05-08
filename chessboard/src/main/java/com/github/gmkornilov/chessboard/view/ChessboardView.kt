@@ -44,9 +44,7 @@ class ChessboardView @JvmOverloads constructor(
         fun onAllowOpponentMovesChanged(allowOpponentMovesChanged: Boolean)
     }
 
-    private val board: Board by lazy {
-        Board(allowOpponentMoves)
-    }
+    private lateinit var board: Board
 
     private var boardListeners = mutableListOf<BoardListener>()
 
@@ -130,6 +128,7 @@ class ChessboardView @JvmOverloads constructor(
                 recycle()
             }
         }
+        board = Board(allowOpponentMoves)
     }
 
     var fen: String?
