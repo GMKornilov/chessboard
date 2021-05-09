@@ -122,14 +122,14 @@ class ChessboardView @JvmOverloads constructor(
             0, 0
         ).apply {
             try {
-                isWhite = getBoolean(R.styleable.ChessboardView_is_white, true)
-                allowOpponentMoves =
+                _isWhite = getBoolean(R.styleable.ChessboardView_is_white, true)
+                _allowOpponentMoves =
                     getBoolean(R.styleable.ChessboardView_allow_opponent_moves, true)
             } finally {
                 recycle()
             }
         }
-        board = Board(allowOpponentMoves)
+        board = Board(_allowOpponentMoves)
     }
 
     var fen: String?
