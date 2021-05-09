@@ -168,6 +168,7 @@ class ChessboardView @JvmOverloads constructor(
     var allowOpponentMoves: Boolean
         get() = _allowOpponentMoves
         set(value) {
+            board.allowOpponentMoves = value
             _allowOpponentMoves = value
             notifyAllowOpponentMovesChanged()
             invalidate()
