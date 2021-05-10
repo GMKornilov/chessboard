@@ -176,7 +176,6 @@ class ChessboardView @JvmOverloads constructor(
 
     fun addBoardListener(listener: BoardListener) {
         boardListeners.add(listener)
-        listener.onFenChanged(getFEN())
     }
 
     fun removeBoardListener(listener: BoardListener) {
