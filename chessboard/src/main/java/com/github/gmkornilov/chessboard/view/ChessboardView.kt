@@ -176,7 +176,6 @@ class ChessboardView @JvmOverloads constructor(
 
     fun addBoardListener(listener: BoardListener) {
         boardListeners.add(listener)
-        listener.onFenChanged(getFEN())
     }
 
     fun removeBoardListener(listener: BoardListener) {
@@ -309,6 +308,9 @@ class ChessboardView @JvmOverloads constructor(
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         event ?: return false
+        if (!isClickable) {
+            return false
+        }
         if (animatedPiece != null) {
             return true
         }
