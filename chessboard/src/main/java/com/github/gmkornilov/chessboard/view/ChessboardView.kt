@@ -308,6 +308,9 @@ class ChessboardView @JvmOverloads constructor(
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         event ?: return false
+        if (!isClickable) {
+            return false
+        }
         if (animatedPiece != null) {
             return true
         }
