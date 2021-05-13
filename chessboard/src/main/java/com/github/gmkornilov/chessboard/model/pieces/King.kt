@@ -100,7 +100,7 @@ internal class King(isWhite: Boolean) : Piece(isWhite) {
     override fun canHit(cellInfo: CellInfo, board: Board): Boolean {
         val deltaRow = position.row - cellInfo.row
         val deltaCol = position.col - cellInfo.col
-        return (deltaCol != 0 && deltaRow != 0) && max(abs(deltaCol), abs(deltaRow)) == 1
+        return max(abs(deltaCol), abs(deltaRow)) == 1
     }
 
     override fun toString(): String {
