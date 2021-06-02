@@ -125,6 +125,7 @@ class ChessboardView @JvmOverloads constructor(
                 _isWhite = getBoolean(R.styleable.ChessboardView_is_white, true)
                 _allowOpponentMoves =
                     getBoolean(R.styleable.ChessboardView_allow_opponent_moves, true)
+                _allowMoves = getBoolean(R.styleable.ChessboardView_allow_moves, true)
             } finally {
                 recycle()
             }
@@ -173,6 +174,8 @@ class ChessboardView @JvmOverloads constructor(
             notifyAllowOpponentMovesChanged()
             invalidate()
         }
+
+    private var _allowMoves = true
 
     fun addBoardListener(listener: BoardListener) {
         boardListeners.add(listener)
@@ -308,7 +311,7 @@ class ChessboardView @JvmOverloads constructor(
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         event ?: return false
-        if (!isClickable) {
+        if (!_allowMoves) {
             return false
         }
         if (animatedPiece != null) {
