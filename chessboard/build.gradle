@@ -12,7 +12,7 @@ repositories {
 }
 
 group = 'com.github.GMKornilov'
-version = '1.0.4'
+version = '1.0.5'
 
 android {
     compileSdkVersion 30
@@ -20,7 +20,7 @@ android {
 
     defaultConfig {
         minSdkVersion 22
-        targetSdkVersion 30
+        targetSdkVersion 22
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -60,7 +60,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'com.github.jitpack'
                 artifactId = 'android-example'
-                version = '1.0.4'
+                version = '1.0.5'
             }
         }
     }
