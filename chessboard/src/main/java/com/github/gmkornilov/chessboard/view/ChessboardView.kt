@@ -1,5 +1,7 @@
 package com.github.gmkornilov.chessboard.view
 
+import android.animation.TypeEvaluator
+import android.animation.ValueAnimator
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Canvas
@@ -10,6 +12,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import androidx.core.animation.doOnEnd
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -61,12 +64,6 @@ class ChessboardView @JvmOverloads constructor(
     private var animatedPiece: Piece? = null
     private var animX = -1f
     private var animY = -1f
-    private var animDeltaX = -1f
-    private var animDeltaY = -1f
-    private var animToX = -1f
-    private var animToY = -1f
-    private var animationsLeft = -1
-    private val animationDrawAmounts = 15
 
     private var clickedOnce = false
 
@@ -305,7 +302,7 @@ class ChessboardView @JvmOverloads constructor(
 
         val piece = animatedPiece
         if (piece != null) {
-            drawAnimatedPiece(canvas, piece)
+            drawPieceAt(canvas, piece, animX, animY, normalPieceSize)
         }
     }
 
@@ -370,18 +367,35 @@ class ChessboardView @JvmOverloads constructor(
             startAnimation()
             return
         }
-        animationsLeft = animationDrawAmounts
+        val animFrom = Pair(
+            sideX + cellSize * from.col + (cellSize - normalPieceSize) / 2,
+            sideY + cellSize * from.row + (cellSize - normalPieceSize) / 2
+        )
+        val animTo = Pair(
+            sideX + cellSize * to.col + (cellSize - normalPieceSize) / 2,
+            sideY + cellSize * to.row + (cellSize - normalPieceSize) / 2
+        )
+
         animatedPiece = piece
-        animX = sideX + cellSize * from.col + (cellSize - normalPieceSize) / 2
-        animY = sideY + cellSize * from.row + (cellSize - normalPieceSize) / 2
-
-        animToX = sideX + cellSize * to.col + (cellSize - normalPieceSize) / 2
-        animToY = sideY + cellSize * to.row + (cellSize - normalPieceSize) / 2
-
-        animDeltaX = (animToX - animX) / animationDrawAmounts
-        animDeltaY = (animToY - animY) / animationDrawAmounts
-
-        invalidate()
+        val evaluator = TypeEvaluator<Pair<Float, Float>> { fraction, startValue, endValue ->
+            val curFirst = fraction * (endValue.first - startValue.first) + startValue.first
+            val curSecond = fraction * (endValue.second - startValue.second) + startValue.second
+            Pair(curFirst, curSecond)
+        }
+        val animator = ValueAnimator.ofObject(evaluator, animFrom, animTo)
+        animator.addUpdateListener {
+            val curCoords = (it.animatedValue as? Pair<Float, Float>) ?: return@addUpdateListener
+            animX = curCoords.first
+            animY = curCoords.second
+            invalidate()
+        }
+        animator.doOnEnd {
+            currentAnimations.removeFirst()
+            animatedPiece = null
+            startAnimation()
+            invalidate()
+        }
+        animator.start()
     }
 
     private fun onCellClicked(row: Int, col: Int) {
@@ -495,19 +509,6 @@ class ChessboardView @JvmOverloads constructor(
         val left = sideX + drawPosition.col * cellSize + (cellSize - normalPieceSize) / 2
         val top = sideY + drawPosition.row * cellSize + (cellSize - normalPieceSize) / 2
         drawPieceAt(canvas, piece, left, top, normalPieceSize)
-    }
-
-    private fun drawAnimatedPiece(canvas: Canvas, piece: Piece) {
-        drawPieceAt(canvas, piece, animX, animY, normalPieceSize)
-        animX += animDeltaX
-        animY += animDeltaY
-        animationsLeft--
-        if (animationsLeft == 0) {
-            currentAnimations.removeFirst()
-            animatedPiece = null
-            startAnimation()
-        }
-        invalidate()
     }
 
     private fun drawDraggedPiece(canvas: Canvas) {
