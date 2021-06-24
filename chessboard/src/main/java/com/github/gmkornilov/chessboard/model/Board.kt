@@ -320,7 +320,8 @@ internal class Board(var allowOpponentMoves: Boolean) {
             val enPassantInfo = extraInfo[2]
             if (enPassantInfo != "-") {
                 val enPassantCol = enPassantInfo[0] - 'a'
-                val enPassantRow = Character.getNumericValue(enPassantInfo[1])
+                var enPassantRow = Character.getNumericValue(enPassantInfo[1]) - 1
+                enPassantRow += if (isWhiteTurn) -1 else 1
                 canEnPassant = true
                 enPassantCellInfo = CellInfo(enPassantCol, enPassantRow)
             }

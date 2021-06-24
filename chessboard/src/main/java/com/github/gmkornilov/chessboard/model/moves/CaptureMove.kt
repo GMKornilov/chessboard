@@ -28,14 +28,14 @@ internal open class CaptureMove(val capturePiece: Piece, val killedPiece: Piece,
     override fun getAnimationsInfo(isWhite: Boolean): List<AnimationInfo> {
         return listOf(
             AnimationInfo(
-                killedPiece,
-                CellInfo.toAnimationIndexes(to, isWhite),
-                null
-            ),
-            AnimationInfo(
                 capturePiece,
                 CellInfo.toAnimationIndexes(from, isWhite),
                 CellInfo.toAnimationIndexes(to, isWhite)
+            ),
+            AnimationInfo(
+                killedPiece,
+                CellInfo.toAnimationIndexes(to, isWhite),
+                null
             )
         )
     }

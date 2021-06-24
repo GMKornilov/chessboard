@@ -38,7 +38,7 @@ internal class PromotionMove(val pawn: Pawn, val killedPiece: Piece?, val from: 
         } else {
             emptyList()
         }
-        return plusList + listOf(
+        return listOf(
             AnimationInfo(
                 pawn,
                 CellInfo.toAnimationIndexes(from, isWhite),
@@ -54,7 +54,7 @@ internal class PromotionMove(val pawn: Pawn, val killedPiece: Piece?, val from: 
                 null,
                 CellInfo.toAnimationIndexes(to, isWhite)
             )
-        )
+        ) + plusList
     }
 
     override fun getMoveCell(): CellInfo {
